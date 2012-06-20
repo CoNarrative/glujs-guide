@@ -1848,7 +1848,7 @@ Static views are usually not all there is in a reactive application. In fact, a 
 
 ExtJS has some support for this. The most obvious example is the grid, which renders each item (a record or model) in a list (store) - but you have to use grid columns or your own HTML renderers and not ExtJS controls, and it is assumed that all rows are the same. A less-commonly used option is the `DataView`. It is much the same as a grid, but instead of the template being a set of ExtJS components (as one would expect), it is instead a raw HTML `xtemplate` that you supply and again assumes similar rows. Furthermore, since the appeal of a widget set like ExtJS is that you *are not having to write* cross-browser HTML, using the `DataView` can be frustrating and counter-intuitive.
 
-ExtJS also supports normal `container` structures like tabs and accordion layouts which *do* let you put whatever you want in each item. However, these don't let you bind what they contain to a store. You must manually create and maintain the appropriate child components. This is obviously redundant and repetitive for grids and dataviews; it is equally redundant and repetitive here.
+ExtJS also supports normal `container` structures like tabs, accordion layouts, menus, etc. which *do* let you put a variety of items inside them. However, these don't let you bind what they contain to a store. You must manually create and maintain the appropriate child components. This is obviously redundant and repetitive for grids and dataviews; it is equally redundant and repetitive here.
 
 GluJS unifies the 'templated list' pattern into a single, simple concept called `container binding` or more specifically `items binding`.
 
@@ -1856,13 +1856,13 @@ In short, instead of having limited, manual, idiosyncratic support for rendering
 
 ```javascript
 glu.defModel('assets.main',{
-    assets : {
+    assetList : {
         mtype : 'list'
     }
 });
 glu.defView('assets.main',{
     layout : 'vbox',
-    items : '@{assets}'
+    items : '@{assetList}'
 });
 glu.defView('assets.asset',{
     xtype : 'form',
@@ -1872,10 +1872,63 @@ glu.defView('assets.asset',{
 
 The preceding example will add an asset form panel (laid out vertically within the main view) for each view model within the assets list. If an asset is added, its corresponding view will show up in the correct spot just like a row in a grid. If the asset is removed from the list, it is removed from the view.
 
+This works for tab panels too:
+
+```javascript
+glu.defView('assets.main',{
+    xtype : 'tab',
+    items : '@{assetList}'
+});
+```
+
+In short, it works for any ExtJS control that is a `container` and has an `items` property. It also supports common ExtJS shortcuts to single components off of a control. Consider the `tbar` shortcut, which lets you add in an array of button definitions as a short cut to `{xtype : 'toolbar', items : [buttonsArray]}`:
+
+```javascript
+glu.defView('assets.main',{
+    xtype : 'tab',
+    tbar : '@{assetList}'
+});
+```
+
 ####Item Templates
 
+The previous example raises an interesting question: isn't it a bit overkill to force each button to be its own GluJS view? What if I just want a "one-off" template against that record/model/view model?
+
+In the parent container, you can indicate that you want to provide a custom template by providing an object or function as the `itemTemplate`. Let's say I have the items in a menu bound to a list (quite common). Perhaps the concept is that the server provides a list of my favorite shortcut screens (and I need this to fit within a menu instead of looking as a combo box). When you pick a favorite, it adds it as a tab. The definitions would look like this (concentrating on the view side of things):
+
+```javascript
+glu.defModel('assets.main',{
+    favoriteList : {
+        mtype : 'store'
+        //more store setup goes here...assume a 'name' field and an 'id' field.
+    },
+    addScreen : function (screenId){
+        //...add the appropriate screen to the list of favorites kept in a tab view
+    }
+});
+glu.defView('assets.main',{
+    tbar : [{
+        text : 'Screens',
+        menu : [{
+            text : 'Favorites',
+            menu : '@{favoriteList}' //shortcut definition
+            itemTemplate : {
+                text : '@{name}',
+                value : '@{id}',
+                handler : '@{addScreen}'
+            }
+        }]
+    }]
+});
+```
+
+The 'Favorites' menu item will now follow the contents of the favorites list. When an item is selected, it will invoke a parameterized command (`addScreen`) with the appropriate value parameter. If `favoriteList` is modified, the menu contents will update themselves to match.
+
+Item templates (and item binding in general) are a powerful way to extend ExtJS 'inline'; in many situations it completely replaces the need for custom components.
 
 ###Localization
+
+
 `~~~title~~~`
 
 
@@ -1891,10 +1944,6 @@ glu.defView ('assets.asset', {
 
 });
 ```
-
-##Recipes (Composition Patterns)
-`{xtype:'@{detail}'}`
-
 
 ##Extending gluJS
 
