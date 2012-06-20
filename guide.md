@@ -1837,17 +1837,41 @@ GluJS automatically appends the remaining arguments from the calling event as de
 
 We are planning on adding more explicit parameterization to the binding syntax in the future so that we are not leaning on additional properties in the control that may have other meanings. For instance, something like `@handler:{openScreen('archiveSet')}`. As always, feedback is welcome.
 
-###Container binding
+###Container binding (templating)
 
-Static views and There are often cases where you have a variable number of items on the screen that aren't rows in a grid. For example:
+Static views are usually not all there is in a reactive application. In fact, a very common pattern is managing and rendering a list of items with:
 
- * multiple tabs that are added by actions and closable by the user
- *
+ * a changing list of (possibly mixed in type) models
+ * a way to display the list visually by binding to the list and rendering each item through a 'template'
+ * (usually) a single 'active' or 'focused' item
+ * (sometimes) the ability to select multiple items (for an operation).
 
-ExtJS has an interesting omission. You can render a row for each
+ExtJS has some support for this. The most obvious example is the grid, which renders each item (a record or model) in a list (store) - but you have to use grid columns or your own HTML renderers and not ExtJS controls, and it is assumed that all rows are the same. A less-commonly used option is the `DataView`. It is much the same as a grid, but instead of the template being a set of ExtJS components (as one would expect), it is instead a raw HTML `xtemplate` that you supply and again assumes similar rows. Furthermore, since the appeal of a widget set like ExtJS is that you *are not having to write* cross-browser HTML, using the `DataView` can be frustrating and counter-intuitive.
 
-But if you want to use actual ExtJS controls for each row, there is no such support.
-`{items : '@{assetList}'}`
+ExtJS also supports normal `container` structures like tabs and accordion layouts which *do* let you put whatever you want in each item. However, these don't let you bind what they contain to a store. You must manually create and maintain the appropriate child components. This is obviously redundant and repetitive for grids and dataviews; it is equally redundant and repetitive here.
+
+GluJS unifies the 'templated list' pattern into a single, simple concept called `container binding` or more specifically `items binding`.
+
+In short, instead of having limited, manual, idiosyncratic support for rendering a 'templated' list, you can now enable *any* container within ExtJS simply by binding its `items` property to a GluJS list or ExtJS store:
+
+```javascript
+glu.defModel('assets.main',{
+    assets : {
+        mtype : 'list'
+    }
+});
+glu.defView('assets.main',{
+    layout : 'vbox',
+    items : '@{assets}'
+});
+glu.defView('assets.asset',{
+    xtype : 'form',
+    items : [{ xtype: 'displayfield'},{xtype:'button}] //etc...
+});
+```
+
+The preceding example will add an asset form panel (laid out vertically within the main view) for each view model within the assets list. If an asset is added, its corresponding view will show up in the correct spot just like a row in a grid. If the asset is removed from the list, it is removed from the view.
+
 ####Item Templates
 
 
