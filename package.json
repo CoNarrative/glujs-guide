@@ -1,0 +1,30 @@
+{
+    "name" : "glujs-guide",
+    "version" : "1.0.0",
+    "description" : "Guide to GluJS 1.0",
+    "keywords" : [ "markdown", "text processing", "ast" ],
+    "maintainers" : [
+        {
+            "name" : "Mike Gai",
+            "email" : "mike@conarrative.com",
+            "web" : "http://conarrative.com"
+        }
+    ],
+    "licenses" : [
+        {
+            "type" : "MIT",
+            "url" : "http://www.opensource.org/licenses/mit-license.php"
+        }
+    ],
+    "repository" : {
+        "type" : "git",
+        "url" : "git://github.com/CoNarrative/glujs-guide.git"
+    },
+    "dependencies": {
+        "markdown": "0.4.0",
+        "commander":"0.6.0",
+        "wrench":"1.3.9",
+        "lazy":"1.0.8"
+    }
+
+}
