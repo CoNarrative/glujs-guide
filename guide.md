@@ -9,7 +9,7 @@
 			- [Adding rich reactive behavior gets complicated fast](#adding-rich-reactive-behavior-gets-complicated-fast)
 			- [Server development can hold back client development (and vice versa).](#server-development-can-hold-back-client-development-and-vice-versa)
 			- [Enterprise requirements like localization and user privileges are hard to enforce](#enterprise-requirements-like-localization-and-user-privileges-are-hard-to-enforce)
-			- [Bloated disorganized code that's different for every developer](#bloated-disorganized-code-that's-different-for-every-developer)
+			- [Bloated disorganized code that's different for every developer](#bloated-disorganized-code-thats-different-for-every-developer)
 			- [Development is painfully slow](#development-is-painfully-slow)
 	- [The GluJS solution](#the-glujs-solution)
 		- [Test-first out-of-the box](#test-first-out-of-the-box)
@@ -39,7 +39,7 @@
 			- [Serialization (data)](#serialization-data)
 		- [Formulas](#formulas)
 			- [IsValid](#isvalid)
-		- [Submodels / child view models](#submodels-/-child-view-models)
+		- [Submodels / child view models](#submodels-child-view-models)
 			- [Lists and stores](#lists-and-stores)
 		- [The view model graph](#the-view-model-graph)
 		- [Commands](#commands)
@@ -65,7 +65,7 @@
 		- [Ajax simulator](#ajax-simulator)
 			- [Routes](#routes)
 			- [Response objects](#response-objects)
-			- [Live demo / user training mode](#live-demo-/-user-training-mode)
+			- [Live demo / user training mode](#live-demo-user-training-mode)
 		- [Data simulator](#data-simulator)
 			- [Fake data](#fake-data)
 	- [The view (and binding) in full](#the-view-and-binding-in-full)
@@ -1310,7 +1310,7 @@ Jasmine already has excellent support for manually controlling the clock to hand
 
 ####Ajax responses
 
-GluJS lets you simulate Ajax responses using the gluJS [AJAX simulator](#Ajax simulator). You define the routes during setup and turn on the framework for *capture*. As the calls are made, instead of being delivered to the browser for an actual AJAX call, they are stored up in each captured route by name.
+GluJS lets you simulate Ajax responses using the gluJS [AJAX simulator](#ajax-simulator). You define the routes during setup and turn on the framework for *capture*. As the calls are made, instead of being delivered to the browser for an actual AJAX call, they are stored up in each captured route by name.
 
 You will typically have a different route for each type of service call and name them accordingly. That way you can manage the responses separately and logically.
 

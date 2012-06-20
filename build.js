@@ -45,6 +45,15 @@ cli
 function build(){
     clean();
     console.log('building doc structure...');
+
+    //set up indentation array
+    var indents=[];
+    var indent = '';
+    lazy.range(10).forEach(function(i){
+        indents[i] = indent;
+        indent = indent + '    ';
+    })
+
     fs.mkdirSync(buildDir);
     var pages = {};
     //var h2Regex = /\#\#\s*(([\w ]?\w)*)/;
@@ -55,10 +64,11 @@ function build(){
     var currentPage = pages['root'];
     var currentPageName = 'root';
     var linkReferencesRegex = /]\s*\(\s*(#[^/)]*)/g;
-    var headerLocation = {};
+    var headers = {};
     function linkify(str, char){
         char = char || '-';
         return str
+            .replace("'",'') //eliminate aposrophes
             .replace(/[^a-zA-Z0-9]/g,char) //replace special characters
             .replace(/[\_\-]+/g,char)  //trim duplicate dashes
             .replace(/^[\_\-]|[\_\-]$/,'')//trim leading/trailing dashes
@@ -82,19 +92,24 @@ function build(){
             var headerMatches = line.match(headerRegex);
             if (headerMatches && headerMatches.length==1) {
                 var name = line.substring(headerMatches[0].length).trim();
-                var anchorName = '#' + linkify(name);
-                headerLocation[anchorName] = currentPageName;
+                var anchorName = linkify(name);
+                headers[anchorName] = {page:currentPageName};
             }
             currentPage.push(line);
         })
         .join(function(){
+            //insert table of contents into root page
+
+            //output pages and fix links to accomodate split pages
             for (var pageName in pages){
                 var lines = pages[pageName];
                 for (var i = 0; i<lines.length; i++){
                     lines[i] = lines[i].replace(linkReferencesRegex, function(match, link){
                         if (link==null) return;
-                        if (headerLocation[link]===pageName) return match;
-                        var replaced = '](' + headerLocation[link] + '.md' + link;
+                        link = link.substring(1);
+                        if (headers[link]===undefined) throw "Cannot find link for -> " + link;
+                        if (headers[link].page===pageName) return match;
+                        var replaced = '](' + headers[link].page + '.md#' + link;
                         return replaced;
                     });
                 }
