@@ -249,7 +249,7 @@ To sump up, what the binding pattern provides is an extremely simple way to deal
 
 In addition to the simplicity of binding, gluJS also provides a very straightforward way to "compose" your views dynamically that include "config transformations", localization, one-to-many tab patterns, dynamic areas of the screen, pop-up messages and dialogs, layouts, and more. Furthermore, there is a strong "name convention" piece to gluJS we have not yet introduced that makes your bindings even simpler and more consistent. These will be covered in a later more detailed section.
 
-####Example flow between viewmodel and view
+**Example flow between viewmodel and view **
 
 The binding built within gluJS is very simple to use, but lets you quickly compose sophisticated interaction patterns. In the running 'Hello World' example, the flow between view and view model can be summarized as follows:
  1. The button starts out toggled because `arriving` starts out `true`, and the `title` of the panel starts out as 'Hello World!' because `message` (which is calculated from the value of `arriving`) is that value.
@@ -292,7 +292,7 @@ The View Model pattern is really just a logical evolution of existing patterns y
 
 You may be familiar with the "standard" "inline component" pattern in simple ExtJS examples. Let's start with the "hello world" example using that approach:
 
-####Inline component approach (NOT GLUJS!)
+**Inline component approach (NOT GLUJS!)**
 
 ```javascript
 //old-school Ext JS straight-ahead style
@@ -322,7 +322,7 @@ Just as importantly, there's no clean way to test the custom behavior you've add
 
 The next logical improvement then is to separate the view (the actual control definition) from the controller (the logical behavior). That at least will lay down some logical file organization and make behavioral code easier to centralize and manage. This approach is exemplified by the MVC pattern offered in Ext JS 4.x.
 
-####MVC approach (NOT GLUJS!)
+**MVC approach (NOT GLUJS!)**
 
 ```javascript
 //CONTROLLER FILE
@@ -561,7 +561,7 @@ The view model is composed of several distinct parts that represent your applica
        special type of reactor where the action is setting a single property; if it's more complicated, use a reactor.
 
 
-### Example
+**Example**
 
 ```javascript
 glu.model({
@@ -807,7 +807,8 @@ Let's say you have an application with a complex grid that needs to be refreshed
 
 A common way to do this would be to separate out the 'refresh' into a function and then have each of the setters for these trigger the refresh:
 
-#####Example (NOT RECOMMENDED)
+**Example (NOT RECOMMENDED)**
+
 ```javascript
     propertyA: '',
     propertyB: '',
@@ -836,7 +837,8 @@ A common way to do this would be to separate out the 'refresh' into a function a
 
 In other words, you add the behavior on the triggering end of things. But if there are multiple triggers, this creates redundancies. With gluJS, you could simply state the following instead:
 
-#####Example (RECOMMENDED)
+**Example (RECOMMENDED)**
+
 ```javascript
     propertyA: '',
     propertyB: '',
