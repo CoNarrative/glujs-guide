@@ -538,7 +538,7 @@ var vm = glu.model('example.main');
 
 Javascript has a different notion of `this` than more traditional Object-Oriented languages. Since functions are first-class and can be passed around and called from another function and are not tied intrinsically to an object instance, the meaning of `this` is determined by the calling context and so can be ambiguous. This often leads to many subtle and not-so-subtle bugs.
 
-One way around this is to set a `me` variable to the appropriate scope and use it instead so that it is enclosed within the function. That means the value of `me` will be fixed. That is certainly an option within gluJS. However, you are still having to explicitly on a context by context basis what the value of `me` is.
+One way around this is to set a `me` variable to the appropriate scope and use it instead so that it is enclosed within the function. That means the value of `me` will be fixed. That is certainly an option within gluJS. However, this still means you need to track on a context-by-context basis what the value of `me` is.
 
 GluJS cuts through this ambiguity by *always* making the scope of `this` the containing view model. If you use gluJS as intended, you will never have to provide a `scope` value on any callback and `this` will always have a clear, unambiguous meaning.
 
