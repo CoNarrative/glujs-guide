@@ -257,7 +257,7 @@ The binding built within gluJS is very simple to use, but lets you quickly compo
  4. That in turn triggers the view model formula called `message` to recalculate based on the provided formula funciton. It now has the value 'Goodbye World!'
  5. Since the `title` is bound to `message`, gluJS automatically updates the title to match
 
-It's a simple but very powerful pattern. If you are familiar with ExtJS (and even if you are not) it will be useful to walk through the 'For ExtJS Users' section below to see how it compares against "straight-ahead" and "MVC" aproaches on even a simple reactive application.
+It's a simple but very powerful pattern. If you are familiar with ExtJS (and even if you are not) it will be useful to walk through the [For ExtJS users: How does this compare?](#for-extjs-users-how-does-this-compare) section below to see how it compares against "straight-ahead" and "MVC" aproaches on even a simple reactive application.
 
 ###Basic entry points
 
@@ -796,7 +796,8 @@ Glu has some strong naming conventions around commands (as well as other propert
  * `fooIsVisible`  - whether it is visible/invisible
  * `fooIsExpanded` - whether it is expanded/collapsed
 
-Following the naming pattern not only keeps your code consistent across time and developers, but also enables convention-based binding, a feature that reduces code clutter even further (see later section).
+Following the naming pattern not only keeps your code consistent across time and developers, but also enables convention-based binding, a feature that reduces code clutter even further (see
+the section on [Binding by convention](#binding-by-convention)).
 
 ### Reactors
 
@@ -1696,7 +1697,7 @@ Now for the binding directives (these all come immediately after the `@` sign an
 
  * `>` One-way binding - update the view when the control changes, but not vice versa, making the control binding "read-only". Example: `value:'@>{displayText}'` will initially set the value to `displayText` and will track changes to that in the view model, but will never itself update the view model.
 
- * `?` Optional binding - do not raise an error if the matching view model property is not found. This is usally only used when working with view adapters (see later section) as ordinarily you want to know when you have a "bad binding'. Example: `value:'@?{displayText}'` will let the application continue smoothely even if there is no `displayText` on the view model. 
+ * `?` Optional binding - do not raise an error if the matching view model property is not found. This is usally only used when working with view adapters (extending gluJS) as ordinarily you want to know when you have a "bad binding'. Example: `value:'@?{displayText}'` will let the application continue smoothely even if there is no `displayText` on the view model.
 
 ###Binding properties
 
@@ -1854,7 +1855,7 @@ But if you want to use actual ExtJS controls for each row, there is no such supp
 `~~~title~~~`
 
 
-###Name-based binding
+###Binding by convention
 
 We've up until now covered "explicit" binding of control config properties. This already is a powerful pattern for organizing UI and greatly simplifying code. Yet as you use it, you will inevitably notice that binding patterns tend to repeat themselves.
 
