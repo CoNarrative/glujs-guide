@@ -1,5 +1,6 @@
 var srcFile = 'guide.md';
 var buildDir = 'build';
+var rootName = 'guide-toc';
 var footer = "\n\n*Copyright 2012 Mike Gai. All rights reserved.*"
 
 var path = require('path');
@@ -26,8 +27,8 @@ cli
 //    var input = fs.readFileSync(srcFile, 'utf8');
 //    var tree = markdown.toHTMLTree(input);
 //    var pages = {};
-//    pages['root']=[];
-//    var currentPage = pages['root'];
+//    pages[rootName]=[];
+//    var currentPage = pages[rootName];
 //    for (var i = 0;i<tree.length;i++){
 //        var thisNode = tree[i];
 //        if (thisNode && thisNode.slice && thisNode[0]=='h2') {
@@ -49,10 +50,10 @@ function build(){
     //set up indentation array
     var indents=[];
     var indent = '';
-    lazy.range(10).forEach(function(i){
+    for (var i =0;i<10;i++) {
         indents[i] = indent;
         indent = indent + '    ';
-    })
+    }
 
     fs.mkdirSync(buildDir);
     var pages = {};
@@ -60,9 +61,9 @@ function build(){
 
     var headerRegex =/^#+/;
     var h2Regex = /^\#\#[^#]/;
-    pages['root'] = [];
-    var currentPage = pages['root'];
-    var currentPageName = 'root';
+    pages[rootName] = [];
+    var currentPage = pages[rootName];
+    var currentPageName = rootName;
     var linkReferencesRegex = /]\s*\(\s*(#[^/)]*)/g;
     var headers = {};
     function linkify(str, char){
@@ -93,13 +94,23 @@ function build(){
             if (headerMatches && headerMatches.length==1) {
                 var name = line.substring(headerMatches[0].length).trim();
                 var anchorName = linkify(name);
-                headers[anchorName] = {page:currentPageName};
+                headers[anchorName] = {
+                    text:name,
+                    page:currentPageName,
+                    depth:headerMatches[0].length-1
+                };
             }
             currentPage.push(line);
         })
-        .join(function(){
-            //insert table of contents into root page
-
+        .join(function(){            
+            var r = pages[rootName];
+            r.push('#Guide to GluJS');
+            r.push('###Table of Contents')
+            for (var headerName in headers) {
+                var header = headers[headerName];
+                var line = indents[header.depth] + '* [' + header.text + '](#' + headerName +')';
+                r.push(line);
+            }
             //output pages and fix links to accomodate split pages
             for (var pageName in pages){
                 var lines = pages[pageName];
