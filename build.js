@@ -108,7 +108,7 @@ function build(){
             r.push('###Table of Contents')
             for (var headerName in headers) {
                 var header = headers[headerName];
-                var line = indents[header.depth] + '* [' + header.text + '](#' + headerName +')';
+                var line = indents[header.depth-1] + '* [' + header.text + '](#' + headerName +')';
                 r.push(line);
             }
             //output pages and fix links to accomodate split pages
