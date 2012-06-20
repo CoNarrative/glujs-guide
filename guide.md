@@ -1,102 +1,8 @@
-**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
-
-- [GluJS](#glujs)
-	- [Reactive applications](#reactive-applications)
-	- [Why GluJS? The short version](#why-glujs-the-short-version)
-	- [Why GluJS? The extended version](#why-glujs-the-extended-version)
-		- [Existing challenges](#existing-challenges)
-			- [Difficult to test](#difficult-to-test)
-			- [Adding rich reactive behavior gets complicated fast](#adding-rich-reactive-behavior-gets-complicated-fast)
-			- [Server development can hold back client development (and vice versa).](#server-development-can-hold-back-client-development-and-vice-versa)
-			- [Enterprise requirements like localization and user privileges are hard to enforce](#enterprise-requirements-like-localization-and-user-privileges-are-hard-to-enforce)
-			- [Bloated disorganized code that's different for every developer](#bloated-disorganized-code-thats-different-for-every-developer)
-			- [Development is painfully slow](#development-is-painfully-slow)
-	- [The GluJS solution](#the-glujs-solution)
-		- [Test-first out-of-the box](#test-first-out-of-the-box)
-			- [Fast UI cycles even if the server-side is incomplete](#fast-ui-cycles-even-if-the-server-side-is-incomplete)
-			- [Tight, organized DRY code](#tight-organized-dry-code)
-			- [Enterprise-ready localization and access rights](#enterprise-ready-localization-and-access-rights)
-			- [Strong reusable design patterns for distributed teams](#strong-reusable-design-patterns-for-distributed-teams)
-			- [Get the most out of best-of-breed HTML 5 graphic libraries](#get-the-most-out-of-best-of-breed-html-5-graphic-libraries)
-			- [Drops in place into existing projects](#drops-in-place-into-existing-projects)
-	- [The Basic SVVM Pattern](#the-basic-svvm-pattern)
-		- [What is a specification?](#what-is-a-specification)
-			- [The specification in code](#the-specification-in-code)
-		- [The view model](#the-view-model)
-		- [The view and binding](#the-view-and-binding)
-			- [Example flow between viewmodel and view](#example-flow-between-viewmodel-and-view)
-		- [Basic entry points](#basic-entry-points)
-	- [For ExtJS users: How does this compare?](#for-extjs-users-how-does-this-compare)
-			- [Inline component approach (NOT GLUJS!)](#inline-component-approach-not-glujs)
-			- [MVC approach (NOT GLUJS!)](#mvc-approach-not-glujs)
-		- [The GluJS way](#the-glujs-way)
-	- [The view model in full](#the-view-model-in-full)
-		- [Defining and creating a view model](#defining-and-creating-a-view-model)
-		- [A note on `this` and scope](#a-note-on-this-and-scope)
-		- [View model parts](#view-model-parts)
-		- [Example](#example)
-		- [Properties](#properties)
-			- [Serialization (data)](#serialization-data)
-		- [Formulas](#formulas)
-			- [IsValid](#isvalid)
-		- [Submodels / child view models](#submodels-child-view-models)
-			- [Lists and stores](#lists-and-stores)
-		- [The view model graph](#the-view-model-graph)
-		- [Commands](#commands)
-			- [Guard functions](#guard-functions)
-		- [Reactors](#reactors)
-				- [Example (NOT RECOMMENDED)](#example-not-recommended)
-				- [Example (RECOMMENDED)](#example-recommended)
-		- [Convenience methods](#convenience-methods)
-		- [Dialogs](#dialogs)
-		- [View model mixins](#view-model-mixins)
-	- [Specifications in full](#specifications-in-full)
-		- [Given](#given)
-		- [When](#when)
-		- [Meaning](#meaning)
-			- [Simulation setup](#simulation-setup)
-			- [User actions](#user-actions)
-				- [Including the view in testing (sidebar)](#including-the-view-in-testing-sidebar)
-			- [Background jobs](#background-jobs)
-			- [Ajax responses](#ajax-responses)
-		- [ShouldHave](#shouldhave)
-			- [getRequestsFor](#getrequestsfor)
-	- [Simulation framework](#simulation-framework)
-		- [Ajax simulator](#ajax-simulator)
-			- [Routes](#routes)
-			- [Response objects](#response-objects)
-			- [Live demo / user training mode](#live-demo-user-training-mode)
-		- [Data simulator](#data-simulator)
-			- [Fake data](#fake-data)
-	- [The view (and binding) in full](#the-view-and-binding-in-full)
-		- [Defining a view](#defining-a-view)
-			- [Includes (quick xtypes)](#includes-quick-xtypes)
-		- [Materializing a view](#materializing-a-view)
-			- [Nested views](#nested-views)
-			- [Layouts and View Factories](#layouts-and-view-factories)
-			- [Dialogs](#dialogs)
-		- [Binding syntax](#binding-syntax)
-		- [Binding properties](#binding-properties)
-			- [Inline text formulas](#inline-text-formulas)
-		- [Binding commands](#binding-commands)
-			- [Parameterized commands](#parameterized-commands)
-		- [Container binding](#container-binding)
-			- [Item Templates](#item-templates)
-		- [Localization](#localization)
-		- [Name-based binding](#name-based-binding)
-	- [Recipes (Composition Patterns)](#recipes-composition-patterns)
-	- [Extending gluJS](#extending-glujs)
-		- [view adapters](#view-adapters)
-		- [view transformers](#view-transformers)
-			- [Using a view transformer to build an authorization interceptor](#using-a-view-transformer-to-build-an-authorization-interceptor)
-
-#GluJS
-Copyright (C) 2012 Mike Gai
-All rights reserved (NOT under MIT license!!!)
+##GluJS
 
 GluJS is a lightweight specification-driven reactive UI framework for building rich enterprise web and mobile applications using HTML5 widget libraries like Sencha ExtJS.
 
-##Reactive applications
+###Reactive applications
 
 The bar of user experience has been raised. You can no longer deliver a web application with static forms and postbacks that refresh the entire page. Users of enterprise applications expect a rich desktop-like experience that responds to their input and to the back-end and guides them along the proper path. Anything less is frustrating. These are "reactive" applications because they are instantly changing on every input, and any part of the application may trigger a change in any other part. Here are some of the common patterns you might find in a reactive application:
  * Action buttons that enable and disable immediately based on the state of your application and what is selected. For instance, a save button that becomes enabled as soon as a form is "dirty", and then is disabled when not.
@@ -109,7 +15,7 @@ The bar of user experience has been raised. You can no longer deliver a web appl
 
 If you have any of these sorts of requirements, then you have a reactive application.
 
-##Why GluJS? The short version
+###Why GluJS? The short version
 
 Developing rich, reactive business-oriented web UIs turns out to be much more difficult than it first appears. For most enterprises, the smartest thing to do is to find a library that offers a rich UI component set - like Sencha ExtJS - to handle the complexities of laying out UI across browsers.
 
@@ -123,11 +29,9 @@ Best of all, it is "test-driven" from the ground up so that all of your UI code 
 
 If you want more detail on the challenges GluJS addresses, continue with the "Extended Version"; otherwise skip on to the "SVVM" section.
 
-##Why GluJS? The extended version
+###Why GluJS? The extended version
 
 Developing rich web and mobile HTML-based applications in Javascript can be new territory for many enterprise development teams. While there are great libraries like Sencha ExtJS to make a "desktop-like" experience, even ExtJS experts face significant challenges turning the initial "it looks great!" ExtJS wireframes into an actual large working application:
-
-###Existing challenges
 
 ####Difficult to test
 It's not easy to figure out where and how to build unit tests that cover rich UI interactions. That often means tests are done last using Selenium-style tools if they are done at all. Lack of automated test coverage means extra cycles figuring out what the stakeholders really want, and permit additional new features and bug fixes to break previously working code.
@@ -147,11 +51,11 @@ Rich widget libraries are great, but using them in a clean way is challenging. O
 ####Development is painfully slow
 All of this adds up to a painfully slow development cycle in which getting to a high-quality finish for a large application takes much longer than expected, if at all.
 
-##The GluJS solution
+###The GluJS solution
 
 GluJS directly addresses the needs of enterprise developers:
 
-###Test-first out-of-the box
+####Test-first out-of-the box
 GluJS provides a test specification methodology (backed by Jasmine) that captures and turn complex UI behavior provided by stakeholders into actionable code and automated tests. To make sure that the tests correspond to user stories in the real world, gluJS provides a test library that provides full transparent AJAX mocking and dummy data. 
 
 ####Fast UI cycles even if the server-side is incomplete
