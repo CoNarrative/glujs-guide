@@ -56,6 +56,14 @@ function build(){
     var currentPageName = 'root';
     var linkReferencesRegex = /]\s*\(\s*(#[^/)]*)/g;
     var headerLocation = {};
+    function linkify(str, char){
+        char = char || '-';
+        return str
+            .replace(/[^a-zA-Z0-9]/g,char) //replace special characters
+            .replace(/[\_\-]+/g,char)  //trim duplicate dashes
+            .replace(/^[\_\-]|[\_\-]$/,'')//trim leading/trailing dashes
+            .toLowerCase();
+    }
     new lazy(fs.createReadStream(srcFile))
         .lines
         .forEach(function(line){
@@ -64,7 +72,7 @@ function build(){
             //break out along h2 lines...
             var h2Matches = line.match(h2Regex);
             if (h2Matches!=null) {
-                var name = line.substring(h2Matches[0].length-1).trim().replace(/ /g,'_');
+                var name = linkify(line.substring(h2Matches[0].length-1).trim());
                 console.log('----------> ' +  name);
                 pages[name] = [];
                 currentPage = pages[name];
@@ -74,8 +82,7 @@ function build(){
             var headerMatches = line.match(headerRegex);
             if (headerMatches && headerMatches.length==1) {
                 var name = line.substring(headerMatches[0].length).trim();
-                var anchorName = '#' + name.replace(/ /g,'-').toLowerCase();
-                console.log('ANCHOR:  ' + anchorName);
+                var anchorName = '#' + linkify(name);
                 headerLocation[anchorName] = currentPageName;
             }
             currentPage.push(line);
