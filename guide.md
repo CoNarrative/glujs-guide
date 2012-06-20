@@ -387,7 +387,7 @@ This is definitely an organizational improvement. Following a MVC pattern at lea
 
 In effect, all we've done is externalized how component event handlers and references back to other components are "wired". Now that we have split them apart, we have *even more work* than before in writing "component queries" to bring them back together again. We could call the pattern MVCRCQ - a model, view, controller, references, and component queries, because without refs and component queries for each and every bit of "wiring", the MVC pattern won't work.
 
-Not to mention that while there is file separation, there has been little real actual separation at an architectural level:
+Because the view and controller still need to be manually "wired up", there has been little real actual separation at an architectural level:
  * The app is still "brittle": the references and component queries mean your controllers have to know how to find items in your view tree.
  * You still manually find other controls and manipulate them directly.
  * There is still no incremental way to build just the critical behavior without building the entire view tree as well.
