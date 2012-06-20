@@ -47,31 +47,52 @@ function build(){
     fs.mkdirSync(buildDir);
     var pages = {};
     //var h2Regex = /\#\#\s*(([\w ]?\w)*)/;
+
+    var headerRegex =/^#*/;
     var h2Regex = /^\#\#[^#]/;
     pages['root'] = [];
     var currentPage = pages['root'];
-    var linkReferencesRegex = /]\s*\(\s*(#[\w\s]*)/g;
-    var linkTargets = [];
+    var currentPageName = 'root';
+    var linkReferencesRegex = /]\s*\(\s*(#[^/)]*)/g;
+    var headerLocation = {};
     new lazy(fs.createReadStream(srcFile))
         .lines
         .forEach(function(line){
             var line = line.toString();
             if (line==0) line = '';
+            //break out along h2 lines...
             var h2Matches = line.match(h2Regex);
             if (h2Matches!=null) {
-                var name = line.substring(h2Matches[0].length-1).trim();
+                var name = line.substring(h2Matches[0].length-1).trim().replace(/ /g,'_');
                 console.log(line);
                 console.log('----------> ' +  name);
                 pages[name] = [];
                 currentPage = pages[name];
+                currentPageName = name;
             }
-            var linkMatches = [];
+            //is this a header? if so, save globally for later linking
+            var headerMatches = line.match(headerRegex);
+            if (headerMatches) {
+                var name = line.substring(headerMatches[0].length).trim();
+                headerLocation[name.replace(/ /g,'-').toLowerCase()] = currentPageName;
+            }
             currentPage.push(line);
         })
         .join(function(){
-            console.log (JSON.stringify(pages));
             for (var pageName in pages){
-                fs.writeFile(buildDir + '/' + pageName + '.markdown',pages[pageName].join('\n'));
+                var lines = pages[pageName];
+                for (var i = 0; i<lines.length; i++){
+                    var found = false;
+                    lines[i] = lines[i].replace(linkReferencesRegex, function(match, link){
+                        if (link==null) return;
+                        found = true;
+                        var replaced = '](' + headerLocation[link.substring(1)] + link;
+                        console.log('found and replacing link named ' + link + ' with ' + replaced);
+                        return replaced;
+                    });
+                    if (found) console.log (lines[i]);
+                }
+                fs.writeFile(buildDir + '/' + pageName + '.markdown',lines.join('\n'));
             }
         });
 
