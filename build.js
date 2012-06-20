@@ -49,7 +49,7 @@ function build(){
     var pages = {};
     //var h2Regex = /\#\#\s*(([\w ]?\w)*)/;
 
-    var headerRegex =/^#*/;
+    var headerRegex =/^#+/;
     var h2Regex = /^\#\#[^#]/;
     pages['root'] = [];
     var currentPage = pages['root'];
@@ -72,9 +72,11 @@ function build(){
             }
             //is this a header? if so, save globally for later linking
             var headerMatches = line.match(headerRegex);
-            if (headerMatches) {
+            if (headerMatches && headerMatches.length==1) {
                 var name = line.substring(headerMatches[0].length).trim();
-                headerLocation['#' + name.replace(/ /g,'-').toLowerCase()] = currentPageName;
+                var anchorName = '#' + name.replace(/ /g,'-').toLowerCase();
+                console.log('ANCHOR:  ' + anchorName);
+                headerLocation[anchorName] = currentPageName;
             }
             currentPage.push(line);
         })
