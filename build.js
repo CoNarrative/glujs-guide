@@ -1,5 +1,6 @@
 var srcFile = 'guide.md';
 var buildDir = 'build';
+var footer = "\n\n*Copyright 2012 Mike Gai. All rights reserved.*"
 
 var path = require('path');
 var fs = require('fs');
@@ -64,7 +65,6 @@ function build(){
             var h2Matches = line.match(h2Regex);
             if (h2Matches!=null) {
                 var name = line.substring(h2Matches[0].length-1).trim().replace(/ /g,'_');
-                console.log(line);
                 console.log('----------> ' +  name);
                 pages[name] = [];
                 currentPage = pages[name];
@@ -74,7 +74,7 @@ function build(){
             var headerMatches = line.match(headerRegex);
             if (headerMatches) {
                 var name = line.substring(headerMatches[0].length).trim();
-                headerLocation[name.replace(/ /g,'-').toLowerCase()] = currentPageName;
+                headerLocation['#' + name.replace(/ /g,'-').toLowerCase()] = currentPageName;
             }
             currentPage.push(line);
         })
@@ -82,17 +82,14 @@ function build(){
             for (var pageName in pages){
                 var lines = pages[pageName];
                 for (var i = 0; i<lines.length; i++){
-                    var found = false;
                     lines[i] = lines[i].replace(linkReferencesRegex, function(match, link){
                         if (link==null) return;
-                        found = true;
-                        var replaced = '](' + headerLocation[link.substring(1)] + link;
-                        console.log('found and replacing link named ' + link + ' with ' + replaced);
+                        if (headerLocation[link]===pageName) return match;
+                        var replaced = '](' + headerLocation[link] + '.md' + link;
                         return replaced;
                     });
-                    if (found) console.log (lines[i]);
                 }
-                fs.writeFile(buildDir + '/' + pageName + '.markdown',lines.join('\n'));
+                fs.writeFile(buildDir + '/' + pageName + '.md',lines.join('\n') + footer);
             }
         });
 
