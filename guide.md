@@ -269,17 +269,18 @@ That will tell the GluJS to do three things at once:
  * add a listener to the view model so when its property changes, the view follows suit.
    * If you call `.set('arriving', true)` on the view model, the button will toggle to match.
 
-To sump up, what the binding pattern provides is an extremely simple way to deal with interactivity : view models (controllers) never have to deal with view controls, just with view models. Since view models are just properties, formulas, and commands (functions) that *you define for your application*, what it takes to spell out your application's custom behavior is clear and minimalistic. An entire layer of complex development overhead (finding and maintaining references to view controls, observing them, and manipulating) is done away with.
+To sum up, what the binding pattern provides is an extremely simple way to deal with interactivity : view models (controllers) never have to deal with view controls, just with view models. Since view models are just properties, formulas, and commands (functions) that *you define for your application*, what it takes to spell out your application's custom behavior is clear and minimalistic. An entire layer of complex development overhead (finding and maintaining references to view controls, observing them, and manipulating) is done away with.
 
 In addition to the simplicity of binding, GluJS also provides a very straightforward way to "compose" your views dynamically that include "config transformations", localization, one-to-many tab patterns, dynamic areas of the screen, pop-up messages and dialogs, layouts, and more. Furthermore, there is a strong "name convention" piece to GluJS we have not yet introduced that makes your bindings even simpler and more consistent. These will be covered in a later more detailed section.
 
 ###Example flow between view model and view
 
 The binding built within GluJS is very simple to use, but lets you quickly compose sophisticated interaction patterns. In the running 'Hello World' example, the flow between view and view model can be summarized as follows:
- 1. The button starts out toggled because `arriving` starts out `true`, and the `title` of the panel starts out as 'Hello World!' because `message` (which is calculated from the value of `arriving`) is that value.
- 3. When clicked, GluJS sets `arriving` to `false`
- 4. That in turn triggers the view model formula called `message` to recalculate based on the provided formula function. It now has the value 'Goodbye World!'
- 5. Since the `title` is bound to `message`, GluJS automatically updates the title to match
+
+ 1. The button starts out toggled (because `arriving` starts out `true`), and the `title` of the panel starts out as 'Hello World!' (because `message` is a formula calculated off of `arriving`).
+ 3. When the button is clicked, `arriving` changes to `false` (because the `pressed` property of the button is bound to the `arriving` view model property).
+ 4. That in turn triggers `message` to recalculate automatically to the value 'Goodbye World!'
+ 5. The title updates to `Goodbye World!) (since the `title` component property is bound to `message`)
 
 It's a simple but very powerful pattern. If you are familiar with ExtJS (and even if you are not) it will be useful to walk through the [For ExtJS users: How does this compare?](#for-extjs-users-how-does-this-compare) section below to see how it compares against "straight-ahead" and "MVC" approaches on even a simple reactive application.
 
@@ -292,7 +293,7 @@ First is the `Viewport` entry-point when you are using GluJS globally within you
 Ext.onReady(function(){glu.viewport('helloworld.main')};);
 ```
 
-That will locate the `main` view model (defined earlier), find the matching view, and then take over the full page to display the application.
+That will locate the `main` view model (defined earlier), find the matching view, and then within ExtJS take over the full page to display the application.
 
 Often within an enterprise you don't have control over the full application and are instead just one module in a bigger framework. To accommodate that within ExtJS, we provide the `glupanel`. Anywhere you can drop a normal ExtJS `panel`, you can drop a `glupanel` and supply what GluJS needs to get started:
 
@@ -339,11 +340,11 @@ Ext.onReady(function (){
 });
 ```
 
-The problem with this approach is that there is no separation of concerns. The application is one intermixed "blob" of view and behavior. It looks fine for a small example. But following this style on a full enterprise application will lead to a dense tangle of nested spaghetti code. Every component pokes values into every other component (just as the toggleHandler is pushing into the parent panel's title) and the system behavior becomes incredibly hard to track and maintain over time.
+The problem with this approach is that there is no separation of concerns. The application is one intermixed "blob" of view and behavior. It looks fine for a very small application. But following this style on a full enterprise application leads to a dense tangle of nested spaghetti code. Every component pokes values into every other component (just as the toggleHandler is pushing into the parent panel's title) and the system behavior becomes incredibly hard to track and maintain over time.
 
-Just as importantly, there's no clean way to test the custom behavior you've added without a great deal extra work (like using Selenium, or attempting to run everything in a Node server with a non-rendered DOM, etc.)
+Just as importantly, there's no clean way to test the custom behavior you've added without a great deal extra infrastructure work (like installing and writing Selenium tests in a lab, or attempting to run everything in a Node server with a non-rendered DOM, etc.)
 
-The next logical improvement then is to separate the view (the actual control definition) from the controller (the logical behavior). That at least will lay down some logical file organization and make behavioral code easier to centralize and manage. This approach is exemplified by the MVC pattern offered in Ext JS 4.x.
+The next logical improvement is to separate the view (the actual control definition) from the controller (the logical behavior). That at least will lay down some logical file organization and make behavioral code easier to centralize and manage. This approach is exemplified by the MVC pattern offered in Ext JS 4.x.
 
 **MVC approach (NOT GluJS!)**
 
@@ -406,31 +407,32 @@ Ext.application({
 });
 ```
 
-This is definitely an organizational improvement. Following a MVC pattern at least puts the code into separate code files, and now the application will have some basic lines. But it does this *at the expense of much more code* (even ignoring the `Viewport` and application bootstrap for now and just considering the view and controller).
+This is definitely some organizational improvement. Following a MVC pattern at least puts the code into separate code files, and now the application will have some basic 'lines' instead of being a complete 'blob'. But it does this *at the expense of much more code* (even just considering the view and controller).
 
-In effect, all we've done is externalized how component event handlers and references back to other components are "wired". Now that we have split them apart, we have *even more work* than before in writing "component queries" to bring them back together again. We could call the pattern MVCRCQ - a model, view, controller, references, and component queries, because without `refs` and component queries for each and every bit of "wiring", the MVC pattern won't work.
+In effect, all we've done is externalized how component event handlers and references back to other components are "wired". Now that we have split view and behavior apart, we have *even more work* than before in bringing them together again. A more accurate name for the pattern would be MVCRCQ - a model, view, controller, references, and component queries, because without `refs` and component queries for each and every bit of behavior, the MVC pattern doesn't work.
 
-Because the view and controller still need to be manually "wired up", there has been little real actual separation at an architectural level:
+Because the view and controller still need to be manually "wired up", there has been little gain at an architectural level:
 
- * The app is still "brittle": the references and component queries mean your controllers have to know how to find items in your view tree.
+ * The app is still "brittle": the references and component queries mean your controllers have to be deeply aware of your view tree.
 
- * You still manually find other controls and manipulate them directly.
+ * There is still no incremental way to concentrate just the critical behavior without simultaneously having to get every last view component also correct.
 
- * There is still no incremental way to build just the critical behavior without building the entire view tree as well.
+ * There is even more code to write
 
  * And there is still no obvious "entry point" to begin testing.
 
 ###The GluJS way
 
-The best of both worlds would be if the behavior could both be separated into a controller, yet somehow reconnect to the matching view automatically without expensive wiring. All the interesting state could be put into the controller and within the controller we would never have to deal with the view at all. This approach would offer these benefits:
+The best of both worlds would be if behavior could both be cleanly separated into a controller, yet somehow reconnect to the matching view automatically without costly wiring. All the interesting state could be put into the controller and within the controller we would never have to deal with the view at all. This approach would offer these benefits:
 
- * You can eliminate all of the "hand-wiring" and dramatically shrink/simplify code.
+ * You can eliminate all of the "hand-wiring" and dramatically shrink/simplify/stabilize code.
 
- * The controller and view are entirely stand-alone and separate, greatly reducing "brittleness".
+ * The controller and view are entirely stand-alone and separate, greatly reducing the "brittleness" of too many interconnecting parts.
 
- * You can build and test all of your custom application logic before you even deal with the control layout.
+ * You can start defining, building, and testing custom application behavior immediately.
 
 A controller that does this - models important application state and doesn't reference the view - is simply called a "view model."
+
 This of course is the exact approach we take in GluJS:
 
 ```javascript
