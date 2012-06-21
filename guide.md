@@ -425,124 +425,13 @@ Ext.onReady(function(){glu.viewport('helloworld.main');});
 
 The behavior is cleanly separated, we do it without introducing any bloat, and best of all, it is entirely testable.
 
-##The view model in full
+##View model: Parts
 
-I promised earlier that we would return to the view model; after all that is the heart of GluJS. Below is a more in-depth walk-through of how a view model comes together.
+Below is a more in-depth walk-through of how a view model comes together.
 
 The view model is the "common sense" representation of application state and behavior. A 'root' view model represents
 the application as a whole (or the module if you are a sub-app within a 'portal'), while other view models represent
 various screens (tabs, etc.) or areas of a screen.
-
-###Defining and creating a view model
-
-A view model can be defined and instantiated on the fly from within a view model:
-
-```javascript
-var model = this.model ({
-   status: 'OK'
-});
-//or for a dialog
-this.open ({
-   status: 'OK'
-});
-```
-
-or it can be defined first (with namespace) and then referenced later through the 'mtype' property (as long
-as you are in the same namespace):
-
-```javascript
-glu.defModel('example.main', {
-   status : 'OK'
-});
-var vm = this.model ({
-   mtype : 'main'
-});
-```
-
-A view model can also be defined 'inline' within a containing view model using an 'mtype' property of 'viewmodel':
-
-```javascript
-glu.defModel('example.main', {
-   detail : {
-       mtype : 'viewmodel',
-       myProp : 'A'
-   }
-});
-```
-
-or simply by reference
-
-```javascript
-glu.defModel('example.subscreen', {
-   myProp : 'A'
-});
-glu.defModel('example.main', {
-   detail : {
-       mtype : 'subscreen'
-   }
-});
-```
-
-Referenced view models are fully parameterizable, so you can initialize any of the values with overrides:
-
-```javascript
-glu.defModel('example.main', {
-   status : 'OK'
-});
-//...later...
-var vm = this.model({
-   mtype : 'main',
-   status : 'BAD'
-);
-```
-
-A 'root' view model can be instantiated by one of several entry points, but most typically by leveraging the glu viewport factory within the ExtJS entry-point:
-
-```javascript
-Ext.onReady(function(){glu.viewport('example.main');});
-```
-
-or
-
-```javascript
-Ext.onReady(function(){
-    glu.viewport({
-       mtype :'example.main',
-       //optional parameters...
-    });
-});
-```
-
-or it can be included as a subpanel of an already existing application panel:
-
-```javascript
-//...
-items : [{
-   xtype: 'glupanel',
-   viewmodelConfig : {
-       mtype : 'main',
-       //optional parameters...
-   }
-}],
-//...
-```
-
-or (usually just for testing) you can start one with a fully qualified namespace
-
-```javascript
-var vm = glu.model('example.main');
-```
-
-### A note on `this` and scope
-
-Javascript has a different notion of `this` than more traditional Object-Oriented languages. Since functions are first-class and can be passed around and called from another function and are not tied intrinsically to an object instance, the meaning of `this` is determined by the calling context and so can be ambiguous. This often leads to many subtle and not-so-subtle bugs.
-
-One way around this is to set a `me` variable to the appropriate scope and use it instead so that it is enclosed within the function. That means the value of `me` will be fixed. That is certainly an option within GluJS. However, this still means you need to track on a context-by-context basis what the value of `me` is.
-
-GluJS cuts through this ambiguity by *always* making the scope of `this` the containing view model. If you use GluJS as intended, you will never have to provide a `scope` value on any callback and `this` will always have a clear, unambiguous meaning.
-
-
-### View model parts
 
 The view model is composed of several distinct parts that represent your application state and behavior:
 
@@ -598,6 +487,14 @@ glu.model({
    }
 });
 ```
+
+#### A note on `this` and scope
+
+Javascript has a different notion of `this` than more traditional Object-Oriented languages. Since functions are first-class and can be passed around and called from another function and are not tied intrinsically to an object instance, the meaning of `this` is determined by the calling context and so can be ambiguous. This often leads to many subtle and not-so-subtle bugs.
+
+One way around this is to set a `me` variable to the appropriate scope and use it instead so that it is enclosed within the function. That means the value of `me` will be fixed. That is certainly an option within GluJS. However, this still means you need to track on a context-by-context basis what the value of `me` is.
+
+GluJS cuts through this ambiguity by *always* making the scope of `this` the containing view model. If you use GluJS as intended, you will never have to provide a `scope` value on any callback and `this` will always have a clear, unambiguous meaning.
 
 ### Properties
 
@@ -707,69 +604,6 @@ nameIsValid$ : function(){
 }
 ```
 
-### Submodels / child view models
-
-GluJS is a framework for quickly developing real applications with complex navigation and screens. Very often you'll want to split your
-view models in parts. The initial example above has a list of 'student' view models. This list could correspond on the screen to
-a set of items in a mobile list or a set of tabs. This is just one of the built-in UI composition patterns within GluJS.
-
-Submodels are indicated by using the `mtype` property within a nested object.
-
-Note that you *do not* have to divide your view model up just because your screen has logical areas. It can often remain relatively flat if the interactions are simple enough. For instance, you may have a form with multiple tabs representing different parts of a large data object. You can keep it as one large flat data object, and just break it up at the view level.
-
-Other times, you will have an obvious sub-model. The most common of these is a master-detail page in which there is a grid or list and another area with a form that lets you view and/or edit the detail.
-
-That might look like the following:
-
-```javascript
-glu.defModel ('assets.main',{
-    assetsList : {
-        mtype : 'list'
-    },
-    detail : {
-        mtype : 'asset'
-    }
-});
-glu.defModel ('assets.asset',{
-    id : 0,
-    name : '',
-    //...etc...
-});
-```
-
-#### Lists and stores
-
-You might have noticed above that `mtype` for assetsList is 'list'. The GluJS list object fills in a gap left by frameworks like ExtJS. Many times you do not need a full `store` with support for proxies, flattening of json objects through a reader, and the other facilities provided by a store. You just need a simple observable list that can notify components when an item is added or removed. That's exactly what the 'list' provides.
-
-While a list can contain any value, the most powerful use for a `list` class is when the list contains view models of its own. That naturally can be bound to a set of tabs, cards, or even panels laid-out horizontally or vertically on the screen ('repeaters'). For instance, if you want to dynamically add tabs (we'll call them *screens* below) based on different selections of the user, then the view model might look like the following:
-
-```javascript
-glu.defModel ('assets.main',{
-    screenList : {
-        mtype : 'list'
-    },
-    openScreen : function (screenName) {
-        this.screenList.add(this.model(screenName));
-    },
-    openScreenIsEnabled$ : function(){
-        return this.screenList.length < 8;
-    }
-});
-```
-
-If a tabpanel's `items` collection is bound to the screenList, it will automatically construct the matching tab for that type of view model. Conversely, when the view model is removed from the list, so is the tab from the tabpanel. As a bonus illustration, the example also includes a cap on how many screens can be active; if there are already 8 or more screens open, openScreen will be disabled until enough are closed.
-
-### The view model graph
-
-When you create child view models, those are automatically parented as follows:
- * `this.parentVM` - the child is given a reference to the parent view model. If the child is part of a `list`, the parentVM is the parent of the list, not the list itself. Note that this can change if the view model is 'reparented'.
- * `this.parentList` - the parent list of a child in the list. This too can change based on what list the child is added to.
- * `this.root` - the root view model. The root of the entire view model tree. This is immutable and is simply the "initial entry point". In other words, it constitutes the "application" as far as glu is concerned. That does not preclude you from having multiple application roots within a single page (such as different modules in a larger non-glu application).
-
-Reactors and formulas are automatically attached/detached based on the current configuration of the tree. For instance, if you create a view model with a formula that references `this.parentVM`, when detached (e.g. removed from a list), that view model will stop receiving notifications until reattached at the same point or elsewhere.
-
-The idea of a tree of collaborating view models is a key organizing pattern to larger applications. It lets you break down the application into component parts, while letting them naturally reference one another without having to worry about explicit observer patterns. You can even think of it as giving you a natural fine-grained message bus - put properties or events you are interested in globally at the root level, and more local properties/events lower down the chain.
-
 ###Commands
 
 Whenever the user needs to take an action that isn't necessarily as simple as updating a property - especially when it involves
@@ -868,6 +702,217 @@ If you need to add new behavior to some or all of the property events, you can d
 
 While this is an entirely optional pattern, it is a natural and powerful fit for building modular reactive UIs.
 
+##View model: Putting the pieces together
+
+In the previous section we talked about the various parts that go into a view model. Here we go over how to define, create, and compose them to form an application.
+
+###Defining and creating a view model
+
+A view model can be defined and instantiated on the fly from within a view model:
+
+```javascript
+var model = this.model ({
+   status: 'OK'
+});
+//or for a dialog
+this.open ({
+   status: 'OK'
+});
+```
+
+or it can be defined first (with namespace) and then referenced later through the 'mtype' property (as long
+as you are in the same namespace):
+
+```javascript
+glu.defModel('example.main', {
+   status : 'OK'
+});
+var vm = this.model ({
+   mtype : 'main'
+});
+```
+
+A view model can also be defined 'inline' within a containing view model using an 'mtype' property of 'viewmodel':
+
+```javascript
+glu.defModel('example.main', {
+   detail : {
+       mtype : 'viewmodel',
+       myProp : 'A'
+   }
+});
+```
+
+or simply by reference
+
+```javascript
+glu.defModel('example.subscreen', {
+   myProp : 'A'
+});
+glu.defModel('example.main', {
+   detail : {
+       mtype : 'subscreen'
+   }
+});
+```
+
+Referenced view models are fully parameterizable, so you can initialize any of the values with overrides:
+
+```javascript
+glu.defModel('example.main', {
+   status : 'OK'
+});
+//...later...
+var vm = this.model({
+   mtype : 'main',
+   status : 'BAD'
+);
+```
+
+A 'root' view model can be instantiated by one of several entry points, but most typically by leveraging the glu viewport factory within the ExtJS entry-point:
+
+```javascript
+Ext.onReady(function(){glu.viewport('example.main');});
+```
+
+or
+
+```javascript
+Ext.onReady(function(){
+    glu.viewport({
+       mtype :'example.main',
+       //optional parameters...
+    });
+});
+```
+
+or it can be included as a subpanel of an already existing application panel:
+
+```javascript
+//...
+items : [{
+   xtype: 'glupanel',
+   viewmodelConfig : {
+       mtype : 'main',
+       //optional parameters...
+   }
+}],
+//...
+```
+
+or (usually just for testing) you can start one with a fully qualified namespace
+
+```javascript
+var vm = glu.model('example.main');
+```
+
+### Submodels / child view models
+
+GluJS is a framework for quickly developing real applications with complex navigation and screens. Very often you'll want to split your
+view models in parts. The initial example above has a list of 'student' view models. This list could correspond on the screen to
+a set of items in a mobile list or a set of tabs. This is just one of the built-in UI composition patterns within GluJS.
+
+Submodels are indicated by using the `mtype` property within a nested object.
+
+Note that you *do not* have to divide your view model up just because your screen has logical areas. It can often remain relatively flat if the interactions are simple enough. For instance, you may have a form with multiple tabs representing different parts of a large data object. You can keep it as one large flat data object, and just break it up at the view level.
+
+Other times, you will have an obvious sub-model. The most common of these is a master-detail page in which there is a grid or list and another area with a form that lets you view and/or edit the detail.
+
+That might look like the following:
+
+```javascript
+glu.defModel ('assets.main',{
+    assetsList : {
+        mtype : 'list'
+    },
+    detail : {
+        mtype : 'asset'
+    }
+});
+glu.defModel ('assets.asset',{
+    id : 0,
+    name : '',
+    //...etc...
+});
+```
+
+### Lists and stores
+
+You might have noticed above that `mtype` for assetsList is 'list'. The GluJS list object fills in a gap left by frameworks like ExtJS. Many times you do not need a full `store` with support for proxies, flattening of json objects through a reader, and the other facilities provided by a store. You just need a simple observable list that can notify components when an item is added or removed. That's exactly what the 'list' provides.
+
+While a list can contain any value, the most powerful use for a `list` class is when the list contains view models of its own. That naturally can be bound to a set of tabs, cards, or even panels laid-out horizontally or vertically on the screen ('repeaters'). For instance, if you want to dynamically add tabs (we'll call them *screens* below) based on different selections of the user, then the view model might look like the following:
+
+```javascript
+glu.defModel ('assets.main',{
+    screenList : {
+        mtype : 'list'
+    },
+    openScreen : function (screenName) {
+        this.screenList.add(this.model(screenName));
+    },
+    openScreenIsEnabled$ : function(){
+        return this.screenList.length < 8;
+    }
+});
+```
+
+If a tabpanel's `items` collection is bound to the screenList, it will automatically construct the matching tab for that type of view model. Conversely, when the view model is removed from the list, so is the tab from the tabpanel. As a bonus illustration, the example also includes a cap on how many screens can be active; if there are already 8 or more screens open, openScreen will be disabled until enough are closed.
+
+### The view model graph
+
+When you create child view models, those are automatically parented as follows:
+ * `this.parentVM` - the child is given a reference to the parent view model. If the child is part of a `list`, the parentVM is the parent of the list, not the list itself. Note that this can change if the view model is 'reparented'.
+ * `this.parentList` - the parent list of a child in the list. This too can change based on what list the child is added to.
+ * `this.root` - the root view model. The root of the entire view model tree. This is immutable and is simply the "initial entry point". In other words, it constitutes the "application" as far as glu is concerned. That does not preclude you from having multiple application roots within a single page (such as different modules in a larger non-glu application).
+
+Reactors and formulas are automatically attached/detached based on the current configuration of the tree. For instance, if you create a view model with a formula that references `this.parentVM`, when detached (e.g. removed from a list), that view model will stop receiving notifications until reattached at the same point or elsewhere.
+
+The idea of a tree of collaborating view models is a key organizing pattern to larger applications. It lets you break down the application into component parts, while letting them naturally reference one another without having to worry about explicit observer patterns. You can even think of it as giving you a natural fine-grained message bus - put properties or events you are interested in globally at the root level, and more local properties/events lower down the chain.
+
+###View model mixins
+Often different view models will share similar structures within an application, or two view models will be closely related but only with a slight twist between them. In those cases, you'll want to use *mixins*.
+
+Whenever you define a view model, you can provide an array of other view models under a `mixins` property as follows:
+
+```javascript
+//the base mixin
+glu.defModel('assets.asset', {
+  name : '',
+  //..other shared commands, functions, and properties...
+});
+glu.defModel('assets.activeAsset',{
+  mixins : ['asset'],
+  //...unique properties, commands, functions
+});
+glu.defModel('assets.archivedAsset',{
+  mixins : ['asset'],
+  //...unique properties, commands, functions
+});
+```
+
+One of the design goals of GluJS was to avoid the complexity of inheritance patterns within Javascript and instead favor object composition. There is no support for chaining method calls to a parent 'class'. Whenever you run into situations where you might be tempted to use inheritance, there's usually another way to break down the problem. A common technique is a 'virtual method' such as having the mixin call another, absent function provided by the target view models:
+
+```javascript
+//the base mixin
+glu.defModel('assets.asset', {
+    save : function(){
+        this.saveInternal();   //'virtual' method
+    }
+});
+glu.defModel('assets.activeAsset',{
+  mixins : ['asset'],
+  saveInternal : function(){
+  }
+});
+glu.defModel('assets.archivedAsset',{
+  mixins : ['asset'],
+  saveInternal : function(){
+  }
+});
+```
+
+This approach avoids class definition trees and keeps things simple.
+
 ### Convenience methods
 
 There are a number of convenience methods that are commonly used within a view model. Use them
@@ -961,50 +1006,6 @@ glu.defModel('assets.options', {
 ```
 
 Binding adapters within GluJS will control the accessibility of any 'close' buttons to match the state of `closeIsEnabled`.
-
-###View model mixins
-Often different view modesl will share similar structures within an application, or two view models will be closely related but only with a slight twist between them. In those cases, you'll want to use *mixins*.
-
-Whenever you define a view model, you can provide an array of other view models under a `mixins` property as follows:
-
-```javascript
-//the base mixin
-glu.defModel('assets.asset', {
-  name : '',
-  //..other shared commands, functions, and properties...
-});
-glu.defModel('assets.activeAsset',{
-  mixins : ['asset'],
-  //...unique properties, commands, functions
-});
-glu.defModel('assets.archivedAsset',{
-  mixins : ['asset'],
-  //...unique properties, commands, functions
-});
-```
-
-One of the design goals of GluJS was to avoid the complexity of inheritance patterns within Javascript and instead favor object composition. There is no support for chaining method calls to a parent 'class'. Whenever you run into situations where you might be tempted to use inheritance, there's usually another way to break down the problem. A common technique is a 'virtual method' such as having the mixin call another, absent function provided by the target view models:
-
-```javascript
-//the base mixin
-glu.defModel('assets.asset', {
-    save : function(){
-        this.saveInternal();   //'virtual' method
-    }
-});
-glu.defModel('assets.activeAsset',{
-  mixins : ['asset'],
-  saveInternal : function(){
-  }
-});
-glu.defModel('assets.archivedAsset',{
-  mixins : ['asset'],
-  saveInternal : function(){
-  }
-});
-```
-
-This approach avoids class definition trees and keeps things simple.
 
 ##Specifications in full
 
