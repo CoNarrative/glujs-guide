@@ -1457,7 +1457,7 @@ You can lean on the fake data API which will provide fake data based on an analy
 
 Building out the ease and sophistication of the ajax and data frameworks is one of our top priorites on the GluJS roadmap and we are greatly interested in your feedback.
 
-##The view (and binding) in full
+##View: the basics
 
 The view is the final piece of the puzzline in creating rich, reactive applications.
 
@@ -1689,9 +1689,116 @@ glu.defView('examples.assets.asset', {
 
 The `asWindow` block is ignored until the view is triggered through an `open` command in the view model. At that point, the properties within the `asWindow` block are merged into the view itself, replacing any overlapping properties.
 
-###Binding syntax
+###Localization
+
+GluJS is an enterprise framework that assumes every application should be localized. Since every application should be localized and all text displayed to the user needs to be localized, it's important to bake that in as an easy-to-use facility.
+
+To make sure text is localized, simply supply a *localization key* instead of the actual text. You may have noticed this pattern throughout the examples - you simply wrap the key in a pair of double-tildes (`~~`). The view above declares three localization keys - `screens` and `favorites`. To supply these, simply provide a localization object for that user:
+
+**English locale object for preceding example code**
+```javascript
+assets.locale = {
+    screens : 'Screens',
+    favorites : 'Favorites'
+}
+```
+
+We recommend that this object be supplied in an appropriately named 'locale' file. However, supplying the appropriate file for the user's locale is outside of the scope of gluJS as a client side library (since sometimes you want to base that on information provided by the server instead of by the client's browser) though it is a fairly simple item to implement.
+
+When you need to localize something within the view model, use the `this.localize` view model method (see the API docs).
+
+The default localizer has a simple but elegant scheme for managing your locale keys. You can keep them all at the root level (`assets.locale`) if you'd like. Or when some seem to correspond more with a particular screen, you can organize them by the names of your view model. For instance, if you have a child view model, you can do the following:
+
+```javascript
+glu.defView ('assets.main',{
+    title : '~~title~~',
+    layout : 'border',
+    tbar : [{ text : '~~name~~'}],
+    items : [{
+        xtype : 'grid',
+        region : 'center',
+        //a bunch of grid definition here...
+    },{
+        region : 'right',
+        xtype : '@{detail}'
+    }]
+});
+glu.defView ('assets.asset',{
+    title : '~~title~~',
+    xtype : 'form',
+    items: [{
+        fieldLabel : '~~name~~',
+        value : '@{name}'
+    },{
+        //...etc...
+    }]
+});
+glu.assets.locale={
+    name : 'Name',
+    main : {
+        title : 'Assets Application'
+    },
+    asset : {
+        title : 'Asset Detail',
+        name : 'Asset Name' //overrides the one in the root
+    }
+};
+```
+
+This organization by view model effectively and naturally 'namespaces' your localization keys to avoid conflicts without them becoming long and unwieldy.
+
+####Substitutions (parameterized localization)
+
+Simple text is not always enough - sometimes you need to localize a phrase with arbitrary value substitutions in the middle. You can't simply concatenate in your view model because different languages will order things differently. For that, gluJS supports `string format` like functionality.
+
+When localizing from a view model, along with the key you can pass in values that the key will use in rendering the text. If you want to make sure you can pass in the first name on the message, just do this:
+
+```javascript
+//View model
+glu.defModel('helloworld.main',{
+    arriving : true,
+    firstName : 'Mike',
+    message$: function() {
+        return glu.localize (this.arriving ? 'greeting' : 'farewell', {name:this.firstName});
+    }
+});
+//View
+glu.defView('helloworld.main',{
+    title: '@{message}',
+    tbar : [{
+        text : '~~arrivalStatus~~',
+        pressed : '@{arriving}'
+    }]
+});
+//Locale
+glu.helloworld.locale = {
+    greeting : 'Hello {name}',  //parameterized with a name
+    farewell : 'Goodbye {name}'
+};
+```
+
+You can use named parameters (shown above) or positional parameters like `{0}`,`{1}`, etc. Through the "magic" of glu formula support, the message will now be recalculated whenever either `arriving` *or* `firstName` changes.
+
+There is currently no support within the view for parameterizing the locale key. However, there is a "backdoor" that lets you access view model properties from within your locale key:
+
+```javascript
+glu.assets.locale = {
+    removeAssetsMessage:'This will archive {assetSelections.length} asset(s). Would you like to continue?'
+}
+```
+
+Will work even if you don't provide the key, assuming `assetSelections` is an array property on the view model. Keep in mind that this is probably not the best way to organize things because it forces your locale keys to be somewhat "viewmodel-aware" but is provided as an option for corner-cases.
+
+####Custom localizer
+
+If you already have a localization scheme in place at a higher level of your application, or prefer a different organization, you can replace the default localizer with one of your own by providing a function to `glu.setLocalizer(function(config){})`. The provided function will be supplied a `config.key`, a `config.ns`, a `config.viewmodel` and a `config.params` for each localization call and you can then locate your localized text as needed.
+
+
+##View: Binding
 
 Of course, views need to be *bound* to a view model in order to have any behavior. This is done through the *binding syntax*.
+
+###Binding syntax
 
 The binding syntax supports a number of straightforward operators. Keep in mind we want the binding to be concise so that the behavior can be kept in the view model where it belongs. To that end the operators are very simple and concentrate only on *what to bind* (how to locate and process the property) and *how to bind* (also known as "binding directives"). Let's start with the first kind:
 
@@ -1934,109 +2041,6 @@ The 'Favorites' menu item will now follow the contents of the favorites list. Wh
 
 Item templates (and item binding in general) are a powerful way to extend ExtJS 'inline'; in many situations it completely replaces the need for custom components.
 
-###Localization
-
-GluJS is an enterprise framework that assumes every application should be localized. Since every application should be localized and all text displayed to the user needs to be localized, it's important to bake that in as an easy-to-use facility.
-
-To make sure text is localized, simply supply a *localization key* instead of the actual text. You may have noticed this pattern throughout the examples - you simply wrap the key in a pair of double-tildes (`~~`). The view above declares three localization keys - `screens` and `favorites`. To supply these, simply provide a localization object for that user:
-
-**English locale object for preceding example code**
-```javascript
-assets.locale = {
-    screens : 'Screens',
-    favorites : 'Favorites'
-}
-```
-
-We recommend that this object be supplied in an appropriately named 'locale' file. However, supplying the appropriate file for the user's locale is outside of the scope of gluJS as a client side library (since sometimes you want to base that on information provided by the server instead of by the client's browser) though it is a fairly simple item to implement.
-
-When you need to localize something within the view model, use the `this.localize` view model method (see the API docs).
-
-The default localizer has a simple but elegant scheme for managing your locale keys. You can keep them all at the root level (`assets.locale`) if you'd like. Or when some seem to correspond more with a particular screen, you can organize them by the names of your view model. For instance, if you have a child view model, you can do the following:
-
-```javascript
-glu.defView ('assets.main',{
-    title : '~~title~~',
-    layout : 'border',
-    tbar : [{ text : '~~name~~'}],
-    items : [{
-        xtype : 'grid',
-        region : 'center',
-        //a bunch of grid definition here...
-    },{
-        region : 'right',
-        xtype : '@{detail}'
-    }]
-});
-glu.defView ('assets.asset',{
-    title : '~~title~~',
-    xtype : 'form',
-    items: [{
-        fieldLabel : '~~name~~',
-        value : '@{name}'
-    },{
-        //...etc...
-    }]
-});
-glu.assets.locale={
-    name : 'Name',
-    main : {
-        title : 'Assets Application'
-    },
-    asset : {
-        title : 'Asset Detail',
-        name : 'Asset Name' //overrides the one in the root
-    }
-};
-```
-
-This organization by view model effectively and naturally 'namespaces' your localization keys to avoid conflicts without them becoming long and unwieldy.
-
-####Substitutions (parameterized localization)
-
-Simple text is not always enough - sometimes you need to localize a phrase with arbitrary value substitutions in the middle. You can't simply concatenate in your view model because different languages will order things differently. For that, gluJS supports `string format` like functionality.
-
-When localizing from a view model, along with the key you can pass in values that the key will use in rendering the text. If you want to make sure you can pass in the first name on the message, just do this:
-
-```javascript
-//View model
-glu.defModel('helloworld.main',{
-    arriving : true,
-    firstName : 'Mike',
-    message$: function() {
-        return glu.localize (this.arriving ? 'greeting' : 'farewell', {name:this.firstName});
-    }
-});
-//View
-glu.defView('helloworld.main',{
-    title: '@{message}',
-    tbar : [{
-        text : '~~arrivalStatus~~',
-        pressed : '@{arriving}'
-    }]
-});
-//Locale
-glu.helloworld.locale = {
-    greeting : 'Hello {name}',  //parameterized with a name
-    farewell : 'Goodbye {name}'
-};
-```
-
-You can use named parameters (shown above) or positional parameters like `{0}`,`{1}`, etc. Through the "magic" of glu formula support, the message will now be recalculated whenever either `arriving` *or* `firstName` changes.
-
-There is currently no support within the view for parameterizing the locale key. However, there is a "backdoor" that lets you access view model properties from within your locale key:
-
-```javascript
-glu.assets.locale = {
-    removeAssetsMessage:'This will archive {assetSelections.length} asset(s). Would you like to continue?'
-}
-```
-
-Will work even if you don't provide the key, assuming `assetSelections` is an array property on the view model. Keep in mind that this is probably not the best way to organize things because it forces your locale keys to be somewhat "viewmodel-aware" but is provided as an option for corner-cases.
-
-####Custom localizer
-
-If you already have a localization scheme in place at a higher level of your application, or prefer a different organization, you can replace the default localizer with one of your own by providing a function to `glu.setLocalizer(function(config){})`. The provided function will be supplied a `config.key`, a `config.ns`, a `config.viewmodel` and a `config.params` for each localization call and you can then locate your localized text as needed.
 
 ###Binding by convention
 
