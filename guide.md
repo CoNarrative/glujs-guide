@@ -8,8 +8,8 @@ The bar of user experience has been raised. You can no longer deliver a web appl
  * Action buttons that enable and disable immediately based on the state of your application and what is selected. For instance, a save button that becomes enabled as soon as a form is "dirty", and then is disabled when not.
  * Areas of a form that enable or expand immediately based on a checkbox being activated or a configuration across multiple fields detected. For instance, a parent configuration checkbox that controls access to dependent options, or a scheduler that changes your choices based on what sort of recurrence you've set.
  * A detail panel that slides in an out based on whether anything is selected
- * Tabs that are automatically selected based on the result of actions. For instance, certain actions may cause a panel to slide out with the relevant tab pre-selected. 
- * An options box that controls validation threshholds for other screens of the app. When changed, any affected screen calculations need to be updated.
+ * Tabs that are automatically selected based on the result of actions. For instance, certain actions may cause a panel to slide out with the relevant tab pre-selected.
+ * An options box that controls validation thresholds for other screens of the app. When changed, any affected screen calculations need to be updated.
  * Calculated fields based on the values of other fields that need to be immediately updated when any of the source fields change.
  * A detail panel that dynamically changes what it displays based on the type and number of rows selected. For instance, it may show a customized truck panel for a truck asset versus a computer asset, or an aggregate chart if multiple items are selected.
 
@@ -56,7 +56,7 @@ All of this adds up to a painfully slow development cycle in which getting to a 
 GluJS directly addresses the needs of enterprise developers:
 
 ####Test-first out-of-the box
-GluJS provides a test specification methodology (backed by Jasmine) that captures and turn complex UI behavior provided by stakeholders into actionable code and automated tests. To make sure that the tests correspond to user stories in the real world, GluJS provides a test library that provides full transparent AJAX mocking and dummy data. 
+GluJS provides a test specification methodology (backed by Jasmine) that captures and turn complex UI behavior provided by stakeholders into actionable code and automated tests. To make sure that the tests correspond to user stories in the real world, GluJS provides a test library that provides full transparent AJAX mocking and dummy data.
 
 ####Fast UI cycles even if the server-side is incomplete
 Client developers no longer have to wait to get back to the stakeholders. A rich, simple Ajax back-end simulator lets you jump immediately into producing tested UI code. It also lets developers return the client application back to stakeholders for feedback and review -- perhaps before the actual server is even started. Pointing back to an actual server is later a single configuration switch.
@@ -77,11 +77,11 @@ Libraries like Sencha ExtJS provide a rich, clean look and feel, utilities, and 
 We realize that as an enterprise developer you are often fitting your application into a larger portal or shell. GluJS has multiple entry points that let you drop your application into a larger one, or write the entire app in GluJS.
 
 ##The Basic SVVM Pattern
-GluJS is a refined variant of the MVVM (model-view-viewmodel) pattern that we call SVVM. That's short for specification-view-viewmodel.
+GluJS is a refined variant of the MVVM (Model-View-View Model) pattern that we call SVVM. That's short for Specification-View-View Model.
 
 The switch to SVVM underscores two points. First it underscores one of the main points of GluJS: making it dead simple to drop right into test-first development based on user stories or specifications. In fact, we recommend (and make it simple) to always start with a specification.
 
-The second is that the architecture is simpler than it looks. Essentially, there are 
+The second is that the architecture is simpler than it looks. Essentially, there are
  * specs -        descriptions of what the app is supposed to do that are also fully functional tests
  * view models -  descriptions of screen states and rules that include data
  * views -        declarative JSON that describes the component tree (similar to MXML or XAML from Flex and WPF/Silverlight)
@@ -126,9 +126,9 @@ We recommend capturing your user stories as much as possible in this format. The
 
 ####The specification in code
 
-Here is that same (first) example given in coffescript:
+Here is that same (first) example given in CoffeeScript:
 
-```coffeescript
+```CoffeeScript
 Given 'the Hello World application on launch', ->
   vm = null
   Meaning -> vm = glu.model 'helloworld.main'
@@ -138,7 +138,7 @@ Given 'the Hello World application on launch', ->
     ShouldHave 'set the message to "Goodbye World!"', -> (expect vm.shoutOut).toBe 'Goodbye World!'
 ```
 
-We use coffeescript (for the specifications only) because it makes them so short and expressive that they match up very closely with the plain English specification provided by the analyst. Here's the same thing in javascript if you prefer that:
+We use CoffeeScript (for the specifications only) because it makes them so short and expressive that they match up very closely with the plain English specification provided by the analyst. Here's the same thing in javascript if you prefer that:
 ```javascript
     Given ('the Hello World application on launch', function() {
         var vm;
@@ -173,7 +173,7 @@ A view model is a "state machine" that tracks anything "interesting" going on in
  * calculations (the same again)
  * Ajax calls to a "back-end"
 
-It does *not* include "uninteresting" things that are part of standard out-of-the-box control behavior. For instance, whether a combo-box is expanded or not is usually based entirely on existing standard conventions and handled internally by the control. 
+It does *not* include "uninteresting" things that are part of standard out-of-the-box control behavior. For instance, whether a combo-box is expanded or not is usually based entirely on existing standard conventions and handled internally by the control.
 
 The moment that behavior has additional app-specific logic, it becomes part of the view model. For instance, if the expanded/collapsed state of the combo box is supposed to be auto-expanded whenever a value of 'Other' is input into another combo-box, then that logic needs to be put into the view model as it is not provided "out of the box".
 
@@ -190,7 +190,7 @@ glu.defModel('helloworld.main',{
 
 The view model has a single property and a single formula. A property is simply what you'd expect - a value that you change by calling `.set('arriving')` on the view model. It raises event notifications whenever it changes value.
 
-A formula is a special sort of property that is not changed by calling `.set`, but instead re-caclulates whenever referenced values change, much like a spreadsheet cell that points to other cells. In the case above, the value of `message` will be changed if and only if the value of 'arriving' changes. A property is marked as a formula simply by appending a `$` to it and then providing a function that returns a value. The GluJS framework will analyze the funciton and "wire it up" accordingly.
+A formula is a special sort of property that is not changed by calling `.set`, but instead re-calculates whenever referenced values change, much like a spreadsheet cell that points to other cells. In the case above, the value of `message` will be changed if and only if the value of 'arriving' changes. A property is marked as a formula simply by appending a `$` to it and then providing a function that returns a value. The GluJS framework will analyze the function and "wire it up" accordingly.
 
 This view model above will start with an `arriving` of true and a `message` of 'Hello World'. If you change the value of arriving by calling `.set('arriving', false)`, `message` will change to 'Goodbye World!'.
 
@@ -210,7 +210,7 @@ glu.defView('helloworld.main',{
     title: '@{message}',
     tbar : [{
         text : '~~arrivalStatus~~',
-        pressed : '@{arriving}'            
+        pressed : '@{arriving}'
     }]
 });
 ```
@@ -249,20 +249,20 @@ To sump up, what the binding pattern provides is an extremely simple way to deal
 
 In addition to the simplicity of binding, GluJS also provides a very straightforward way to "compose" your views dynamically that include "config transformations", localization, one-to-many tab patterns, dynamic areas of the screen, pop-up messages and dialogs, layouts, and more. Furthermore, there is a strong "name convention" piece to GluJS we have not yet introduced that makes your bindings even simpler and more consistent. These will be covered in a later more detailed section.
 
-###Example flow between viewmodel and view
+###Example flow between view model and view
 
 The binding built within GluJS is very simple to use, but lets you quickly compose sophisticated interaction patterns. In the running 'Hello World' example, the flow between view and view model can be summarized as follows:
  1. The button starts out toggled because `arriving` starts out `true`, and the `title` of the panel starts out as 'Hello World!' because `message` (which is calculated from the value of `arriving`) is that value.
  3. When clicked, GluJS sets `arriving` to `false`
- 4. That in turn triggers the view model formula called `message` to recalculate based on the provided formula funciton. It now has the value 'Goodbye World!'
+ 4. That in turn triggers the view model formula called `message` to recalculate based on the provided formula function. It now has the value 'Goodbye World!'
  5. Since the `title` is bound to `message`, GluJS automatically updates the title to match
 
-It's a simple but very powerful pattern. If you are familiar with ExtJS (and even if you are not) it will be useful to walk through the [For ExtJS users: How does this compare?](#for-extjs-users-how-does-this-compare) section below to see how it compares against "straight-ahead" and "MVC" aproaches on even a simple reactive application.
+It's a simple but very powerful pattern. If you are familiar with ExtJS (and even if you are not) it will be useful to walk through the [For ExtJS users: How does this compare?](#for-extjs-users-how-does-this-compare) section below to see how it compares against "straight-ahead" and "MVC" approaches on even a simple reactive application.
 
 ###Basic entry points
 
 We have defined the application, but not yet instantiated it anywhere. To do that, GluJS supports two basic entry points.
-First is the viewport entry-point when you are using GluJS globally within your ExtJS application:
+First is the `Viewport` entry-point when you are using GluJS globally within your ExtJS application:
 
 ```javascript
 Ext.onReady(function(){glu.viewport('helloworld.main')};);
@@ -270,19 +270,19 @@ Ext.onReady(function(){glu.viewport('helloworld.main')};);
 
 That will locate the `main` view model (defined earlier), find the matching view, and then take over the full page to display the application.
 
-Often within an enterprise you don't have control over the full application and are instead just one module in a bigger framework. To accomodate that within ExtJS, we provide the `glupanel`. Anywhere you can drop a normal ExtJS `panel`, you can drop a `glupanel` and supply what GluJS needs to get started:
+Often within an enterprise you don't have control over the full application and are instead just one module in a bigger framework. To accommodate that within ExtJS, we provide the `glupanel`. Anywhere you can drop a normal ExtJS `panel`, you can drop a `glupanel` and supply what GluJS needs to get started:
 
 ```javascript
 //within a ExtJS component definition:
 items : [{
     xtype : 'glupanel',
     viewmodelConfig : {
-        mtype : 'helloworld.main'  
+        mtype : 'helloworld.main'
     }
 }
 ```
 
-The property `viewmodelConfig` lets you pass in a configuration block in case the parent application needs to hand in initialization parameters into your view model (that's why the alternate object with `mtype` property is used here). You can have as many glupanels as you need in your application and each will be a 'glu root' independent of the others.
+The property `viewmodelConfig` lets you pass in a configuration block in case the parent application needs to hand in initialization parameters into your view model (that's why the alternate object with `mtype` property is used here). You can have as many `glupanel`s as you need in your application and each will be a 'glu root' independent of the others.
 
 It's really that simple. For more information on how that compared with what we are used to doing in ExtJS, continue on to the next section.
 
@@ -340,7 +340,7 @@ Ext.define('Helloworld.controller.Main', {
                 toggle : this.onButtonChange
             }
         });
-    },    
+    },
     onButtonChange: function(button, state) {
         var msg = this.state ? 'Goodbye World!' : 'Hello World!';
         this.getMainPanel().setTitle(msg); //now getting a reference through the component query defined in refs
@@ -349,7 +349,7 @@ Ext.define('Helloworld.controller.Main', {
 //VIEW FILE
 Ext.define('Helloworld.view.Main', {
     extend: 'Ext.panel.Panel',
-    alias: 'main',    
+    alias: 'main',
     initComponent: function() {
         this.tbar = {
             xtype: 'tbar',
@@ -357,17 +357,17 @@ Ext.define('Helloworld.view.Main', {
                 itemId : 'exitToggle',
                 text : 'Coming/Going' //we let the controller wire up the toggle handler
             }]
-        };        
+        };
         this.callParent();
     }
 });
 //VIEWPORT FILE
 Ext.define('Helloworld.view.Viewport', {
     extend: 'Ext.container.Viewport',
-    layout: 'fit',    
+    layout: 'fit',
     requires: [
         'Helloworld.view.Main'
-    ],    
+    ],
     initComponent: function() {
         this.items = [{
             xtype: 'main'
@@ -376,15 +376,15 @@ Ext.define('Helloworld.view.Viewport', {
 });
 //APPLICATION BOOTSTRAP FILE
 Ext.application({
-    name: 'Helloworld',    
+    name: 'Helloworld',
     autoCreateViewport: true,
     controllers: ['Main']
 });
 ```
 
-This is definitely an organizational improvement. Following a MVC pattern at least puts the code into separate code files, and now the application will have some basic lines. But it does this *at the expense of much more code* (even ignoring the viewport and application bootstrap for now and just considering the view and controller).
+This is definitely an organizational improvement. Following a MVC pattern at least puts the code into separate code files, and now the application will have some basic lines. But it does this *at the expense of much more code* (even ignoring the `Viewport` and application bootstrap for now and just considering the view and controller).
 
-In effect, all we've done is externalized how component event handlers and references back to other components are "wired". Now that we have split them apart, we have *even more work* than before in writing "component queries" to bring them back together again. We could call the pattern MVCRCQ - a model, view, controller, references, and component queries, because without refs and component queries for each and every bit of "wiring", the MVC pattern won't work.
+In effect, all we've done is externalized how component event handlers and references back to other components are "wired". Now that we have split them apart, we have *even more work* than before in writing "component queries" to bring them back together again. We could call the pattern MVCRCQ - a model, view, controller, references, and component queries, because without `refs` and component queries for each and every bit of "wiring", the MVC pattern won't work.
 
 Because the view and controller still need to be manually "wired up", there has been little real actual separation at an architectural level:
  * The app is still "brittle": the references and component queries mean your controllers have to know how to find items in your view tree.
@@ -416,7 +416,7 @@ glu.defView('helloworld.main',{
     title: '@{message}',
     tbar : [{
         text : '~~arrivalStatus~~',
-        pressed : '@{arriving}'            
+        pressed : '@{arriving}'
     }]
 });
 //ExtJS application bootstrap
@@ -437,13 +437,17 @@ The view model is composed of several distinct parts that represent your applica
 
   *    *Properties* - Hold states that various parts of the screen can be in. Usually correspond to things that the user can set
        (like the contents of a text field, or the currently active tab, or which rows of a grid are selected).
+
   *    *Formulas* - Calculated properties that respond to changes in properties or other formulas. By their nature, they are
        read-only so they typically represent the app 'responding' to user interaction. Glu will analyze the formula and keep it
        updated when input properties change.
-  *    *Submodels* - Contains various subscreens and lists of subscreens (glu is for full applications so view models are always
+
+  *    *Sub-models* - Contains various sub-screens and lists of sub-screens (glu is for full applications so view models are always
        in a hierarchy with a single root). There is also a special 'parentVM' property to find any view model's container.
+
   *    *Commands* - Actions that the user can take that aren't represented by simple properties. For instance, a save button or
        hitting the 'close window' indicator.
+
   *    *Reactors* - Rules that are triggered on property / formula changes so you don't have to put all of your side-effects
        into the property setter. For instance, refreshing the grid when any of several filters change. A formula is really a
        special type of reactor where the action is setting a single property; if it's more complicated, use a reactor.
@@ -517,7 +521,7 @@ is not strictly necessary. It is a matter of preference whether you access the p
 get ('foo')
 ```
 
-to keep the `get` behavior encapsulated within the viewmodel.
+to keep the `get` behavior encapsulated within the view model.
 
 To change `get`/`set` behavior (not usually recommended), you can manually add `get`/`set` overrides by using the convention:
 
@@ -530,7 +534,7 @@ setFoo : function(value) {
 
 Calls to `get()` and `set()` will honor these overrides.
 
-In the future, we may provide either automatic getter/setters [`getFoo()` / `setFoo('value')`] and/or Knockout-style getters/setters [`foo()`/`foo('value')`] if there is demand (we have experimented with both)
+In the future, we may provide either automatic getter/setters (`getFoo()` / `setFoo('value')`) and/or Knockout-style getters/setters (`foo()`/`foo('value')`) if there is demand; we have experimented with both and haven't seen a lot of extra value with either though.
 
 ####Serialization (data)
 
@@ -647,7 +651,7 @@ the section on [Binding by convention](#binding-by-convention)).
 The reactor pattern is simply a shortcut to managing "event observers". It's a powerful way to reduce code clutter and break
 out different UI behavior as "rules".  For certain reactive patterns, it lets you "plug in" new behavior in one spot without modifying (and possibly breaking) existing behavior.
 
-Let's say you have an application with a complex grid that needs to be refreshed when any number of text filters, switches and dials on the screen are adjusted. We're going to keep it abstract for now and just call these properties A thorugh E.
+Let's say you have an application with a complex grid that needs to be refreshed when any number of text filters, switches and dials on the screen are adjusted. We're going to keep it abstract for now and just call these properties A thorough E.
 
 A common way to do this would be to separate out the 'refresh' into a function and then have each of the setters for these trigger the refresh:
 
@@ -771,7 +775,7 @@ var vm = this.model({
 );
 ```
 
-A 'root' view model can be instantiated by one of several entry points, but most typically by leveraging the glu viewport factory within the ExtJS entry-point:
+A 'root' view model can be instantiated by one of several entry points, but most typically by leveraging the glu `viewport` factory within the ExtJS entry-point:
 
 ```javascript
 Ext.onReady(function(){glu.viewport('example.main');});
@@ -788,7 +792,7 @@ Ext.onReady(function(){
 });
 ```
 
-or it can be included as a subpanel of an already existing application panel:
+or it can be included as a sub-panel of an already existing application panel:
 
 ```javascript
 //...
@@ -808,13 +812,13 @@ or (usually just for testing) you can start one with a fully qualified namespace
 var vm = glu.model('example.main');
 ```
 
-### Submodels / child view models
+### Sub-models / child view models
 
 GluJS is a framework for quickly developing real applications with complex navigation and screens. Very often you'll want to split your
 view models in parts. The initial example above has a list of 'student' view models. This list could correspond on the screen to
 a set of items in a mobile list or a set of tabs. This is just one of the built-in UI composition patterns within GluJS.
 
-Submodels are indicated by using the `mtype` property within a nested object.
+Sub-models are indicated by using the `mtype` property within a nested object.
 
 Note that you *do not* have to divide your view model up just because your screen has logical areas. It can often remain relatively flat if the interactions are simple enough. For instance, you may have a form with multiple tabs representing different parts of a large data object. You can keep it as one large flat data object, and just break it up at the view level.
 
@@ -858,12 +862,12 @@ glu.defModel ('assets.main',{
 });
 ```
 
-If a tabpanel's `items` collection is bound to the screenList, it will automatically construct the matching tab for that type of view model. Conversely, when the view model is removed from the list, so is the tab from the tabpanel. As a bonus illustration, the example also includes a cap on how many screens can be active; if there are already 8 or more screens open, openScreen will be disabled until enough are closed.
+If a `tabpanel`'s `items` collection is bound to the screenList, it will automatically construct the matching tab for that type of view model. Conversely, when the view model is removed from the list, so is the tab from the `tabpanel`. As a bonus illustration, the example also includes a cap on how many screens can be active; if there are already 8 or more screens open, openScreen will be disabled until enough are closed.
 
 ### The view model graph
 
 When you create child view models, those are automatically parented as follows:
- * `this.parentVM` - the child is given a reference to the parent view model. If the child is part of a `list`, the parentVM is the parent of the list, not the list itself. Note that this can change if the view model is 'reparented'.
+ * `this.parentVM` - the child is given a reference to the parent view model. If the child is part of a `list`, the parentVM is the parent of the list, not the list itself. Note that this can change if the view model is 're-parented'.
  * `this.parentList` - the parent list of a child in the list. This too can change based on what list the child is added to.
  * `this.root` - the root view model. The root of the entire view model tree. This is immutable and is simply the "initial entry point". In other words, it constitutes the "application" as far as glu is concerned. That does not preclude you from having multiple application roots within a single page (such as different modules in a larger non-glu application).
 
@@ -920,7 +924,7 @@ This approach avoids class definition trees and keeps things simple.
 There are a number of convenience methods that are commonly used within a view model. Use them
 instead of the matching ones on the 'glu' object because they
   *    pass in the local namespace
-  *    set the scope of any callback to the viewmodel (so 'this' always refers to the view model)
+  *    set the scope of any callback to the view model (so 'this' always refers to the view model)
   *    automatically create parent/child associations where appropriate
   *    are automatically mocked as needed by the simulation/testing framework just on that view model without breaking core 'glu' for other view models.
 
@@ -937,7 +941,7 @@ The methods are as follows (please refer to the API docs for details):
 
 There are three ways to open up a dialog to the user.
 
-First, if it is simply a message box, then use the built in `this.message` on the view model. It is (for now) simply an alias on to the ExtJS MessageBox functionality that scopes the callback to the viewmodel.
+First, if it is simply a message box, then use the built in `this.message` on the view model. It is (for now) simply an alias on to the ExtJS MessageBox functionality that scopes the callback to the view model.
 
 ```javascript
     //...in view model definition
@@ -1025,11 +1029,11 @@ Specifically, GluJS strongly encourages story-based specifications as follows:
 
 `Given` is used to setup an initial state and should only be used once at the beginning of each spec document. It accepts two arguments: first, a string description of the initial state, and second a nested function that will contain further definitions.
 
-Example (in coffeescript):
+Example (in CoffeeScript):
 
-```coffeescript
+```CoffeeScript
     Given 'the Hello World application on launch', ->
-      vm = null      
+      vm = null
 ```
 
 Any 'globals' for this specification should be defined immediately within the nested function so that they are available everywhere. Typically this includes the root vm you are testing, and often a simulated back-end.
@@ -1045,15 +1049,15 @@ When you nest it within another When statement, we call that adding a *step* to 
  4. When the user toggles their status (back)
     * (check another thing)
 
-we would do it like so (in coffeescript):
+we would do it like so (in CoffeeScript):
 
-```coffeescript
-Given 'the Hello World application on launch', ->  
+```CoffeeScript
+Given 'the Hello World application on launch', ->
   When 'the user toggles their status', ->
-    When 'the user toggles their status (back)', -> 
+    When 'the user toggles their status (back)', ->
 ```
 
-Since the `->` in coffeescript is just shorthand for a function declaration, the equivalent code in javascript is:
+Since the `->` in CoffeeScript is just shorthand for a function declaration, the equivalent code in javascript is:
 
 ```javascript
 Given ('the Hello World application on launch', function(){
@@ -1064,7 +1068,7 @@ Given ('the Hello World application on launch', function(){
 });
 ```
 
-The extra syntax in Javascript for defining nested functions is the one and only reason we tend to use coffeescript for our specifications - it keeps them compact and readable and easier to see in plain English.
+The extra syntax in Javascript for defining nested functions is the one and only reason we tend to use CoffeeScript for our specifications - it keeps them compact and readable and easier to see in plain English.
 
 Sometimes you want to "spec out" additional paths at a certain point in the walk-through. We call these *branches*. Let's say we have two similar stories:
  1. Given the Hello World application on launch
@@ -1084,8 +1088,8 @@ We instantly notice that the first 2 steps are the same, and only the last step 
 
 While we could keep these two stories separate, GluJS with Jasmine gives us the ability to add the second story as a *branch* of the first. We do this in code by simply adding another block *after* the first as follows:
 
-```coffeescript
-Given 'the Hello World application on launch', ->  
+```CoffeeScript
+Given 'the Hello World application on launch', ->
   When 'the user toggles their status', ->
     When 'the user toggles their status (back)', ->
       #stuff that deals with toggling the status back after the first toggle
@@ -1099,9 +1103,9 @@ Notice that 'Given' and 'When' blocks are simply structure and do *absolutely no
 
 ###Meaning
 
-`Meaning` is the block that actually advances the simulated state of the application. The goal is to let the view model "do its thing" entirely ignorant of whether it is running in test harness or as a live applicaiton. That means it has to deal with everything that could happen within the client. These break down into four basic categories:
+`Meaning` is the block that actually advances the simulated state of the application. The goal is to let the view model "do its thing" entirely ignorant of whether it is running in test harness or as a live application. That means it has to deal with everything that could happen within the client. These break down into four basic categories:
  *  *Simulation setup* - Before anything can run, the simulation must be placed into a defined test harness.
- *  *The user takes an action* - The user of the application at this point clicks, drags, or othewise interacts with the application, such as:
+ *  *The user takes an action* - The user of the application at this point clicks, drags, or otherwise interacts with the application, such as:
     * Clicks on a button (to execute a command)
     * Selects a row or item from a grid/list
     * Updates text in a text field or area
@@ -1114,7 +1118,7 @@ GluJS combined with Jasmine provides complete simulation coverage for all four c
 ####Simulation setup
 
 Usually you are going to define and set up your root view model using `glu.model` since that function gives you root view model without creating a view:
-```coffeescript
+```CoffeeScript
     Given 'the Hello World application on launch', ->
       vm = null
       Meaning -> vm = glu.model 'helloworld.main'
@@ -1124,10 +1128,10 @@ Most of the time, you are also going to be setting up a simulated "back end" so 
 
 Lastly, you may want to advance the application to a beginning state by initializing the view model and answering the Ajax calls it makes on initialization. For instance, if the Hello World app needs to get a roster of other people who are also logged in, you might want to advance to that point:
 
-```coffeescript
+```CoffeeScript
     Given 'the Hello World application on launch', ->
       vm = null, backend
-      Meaning -> 
+      Meaning ->
         vm = glu.model 'helloworld.main'
         backend = helloworld.createMockBackend() //a function we define ourselves elsewhere
         vm.init() //internally makes a call to the 'roster' url
@@ -1136,11 +1140,11 @@ Lastly, you may want to advance the application to a beginning state by initiali
 
 ####User actions
 
-User actions are the simplest because they emerge naturally out of what you've defined on the view model. We earily introduced the concept of "interesting" interactions. Another way of looking at that is to ask if it is something you would want to introduce as a step in a manual test. If so, it is "interesting" and belongs in the view model as a public command or property.
+User actions are the simplest because they emerge naturally out of what you've defined on the view model. We earlier introduced the concept of "interesting" interactions. Another way of looking at that is to ask if it is something you would want to introduce as a step in a manual test. If so, it is "interesting" and belongs in the view model as a public command or property.
 
 Here's a concrete example using the helloworld example:
 
-```coffeescript
+```CoffeeScript
 Given 'the Hello World application on launch', ->
   #...Given block stuff...
     When 'the user toggles their status', ->
@@ -1151,7 +1155,7 @@ Since we know that all bindings are "simple" (have no logic) we know that toggli
 
 If it is a user command, we just invoke the function (just as the button would).
 
-```coffeescript
+```CoffeeScript
 Given 'the Hello World application on launch', ->
   #...Given block stuff...
     When 'the user executes the "do it" command', ->
@@ -1160,7 +1164,7 @@ Given 'the Hello World application on launch', ->
 
 If it is a text or value field of some sort, we just set the value:
 
-```coffeescript
+```CoffeeScript
 Given 'the Hello World application on launch', ->
   #...Given block stuff...
     When 'the user changes the personalized welcome to "foo"', ->
@@ -1169,7 +1173,7 @@ Given 'the Hello World application on launch', ->
 
 If it is selecting a row in a grid, we just find the one we want from the store and set it:
 
-```coffeescript
+```CoffeeScript
 Given 'the Hello World application on launch', ->
   #...Given block stuff...
     When 'the user selects a person in the roster', ->
@@ -1178,7 +1182,7 @@ Given 'the Hello World application on launch', ->
 ```
 
 If it is responding to a dialog there's a special method off of the confirm method called `respondWith`:
-```coffeescript
+```CoffeeScript
     When 'the user confirms the delete action', ->
       Meaning -> vm.confirm.respondWith('yes')
 ```
@@ -1189,9 +1193,9 @@ Note that we should never set a formula or invoke anything directly that isn't b
 
 We have also experimented with "view-inclusive" testing, but that makes things more difficult.
 
-We know that we don't want to render the DOM during normal cycles(too slow and difficult to control), but that still leaves us two options. First, we could just let GluJS bind the ExtJS object tree but not render it. That's simple (coffeescript):
+We know that we don't want to render the DOM during normal cycles(too slow and difficult to control), but that still leaves us two options. First, we could just let GluJS bind the ExtJS object tree but not render it. That's simple (CoffeeScript):
 
-```coffeescript
+```CoffeeScript
     var vm = glu.model ('helloworld.main')
     var view = glu.view vm
 ```
@@ -1204,7 +1208,7 @@ Unfortunately, many ExtJS controls assume that they are rendered before you can 
 
 The second remaining option is simulating the DOM within a javascript engine like Node.js. While entirely possible, that becomes a more complicated process all around and defeats the GluJS simplicity of a single developer being able to immediately produce and run testable code without additional installs or environment setups.
 
-Since the views are behaviorless within GluJS and everything "interesting" (custom) goes into the view model, testing the view models is a simple and sufficient way to provide excellent coverage. 
+Since the views are behavior-less within GluJS and everything "interesting" (custom) goes into the view model, testing the view models is a simple and sufficient way to provide excellent coverage.
 
 If you're still interested in "headless ExtJS controls" and perhaps a quick "binding validation check", let us know since we're considering addressing those points in the future.
 
@@ -1212,7 +1216,7 @@ If you're still interested in "headless ExtJS controls" and perhaps a quick "bin
 
 Jasmine already has excellent support for manually controlling the clock to handle background tasks. Here's an example of advancing the clock in the hello world application:
 
-```coffeescript
+```CoffeeScript
   Given 'the Hello World application on launch', ->
     vm = null, backend
     Meaning ->
@@ -1233,7 +1237,7 @@ You will typically have a different route for each type of service call and name
 
 For example, let's say that the 'add to group' operation triggers a single 'add to group' service which when finished triggers a grid refresh. Simulating that might look like the following:
 
-```coffeescript
+```CoffeeScript
   #...Given setup here...
   When 'the user executes the "add to group" command', ->
   Meaning -> vm.addToGroup()
@@ -1252,14 +1256,14 @@ At this point, we are successfully *simulating* the application (which is nice) 
 
 An example:
 
-```coffeescript
+```CoffeeScript
 Given 'the Hello World application on launch', ->
   vm = null
     Meaning -> vm = glu.model 'helloworld.main'
     ShouldHave 'set the message to "Hello World!"', -> (expect vm.shoutOut).toBe 'Hello World!'
     When 'the user toggles their status', ->
     Meaning -> vm.set 'isLeaving', true
-       ShouldHave 'set the message to "Goodbye World!"', -> (expect vm.shoutOut).toBe 'Goodbye World!'    
+       ShouldHave 'set the message to "Goodbye World!"', -> (expect vm.shoutOut).toBe 'Goodbye World!'
 ```
 
 `ShouldHave` blocks assert expectations about the result of the store step - what *should have* happened or what the UI now *should have*. It is an alias on the Jasmine `expect` function, though we prefer to use `ShouldHave` as it keeps writing all of our expectation sentences consistently. The ShouldHave function receives two arguments - the expectation in plain English, and then a function that contains one or more *expectations*, also known as *assertions*.
@@ -1272,7 +1276,7 @@ One of the most commonly used helper functions when simulating Ajax is `backend.
 
 For example, let's flesh out the example given above with the actual expectations. We're not only going to respond to the calls, we're going to assert that they were made in the first place:
 
-```coffeescript
+```CoffeeScript
   #...Given setup here...
   When 'the user executes the "add to group" command', ->
   Meaning -> vm.addToGroup()
@@ -1361,9 +1365,9 @@ The call to an Ajax request is asynchronous (as expected) and so nothing else ha
 
 You control when the simulate Ajax call returns by the `respondTo` method. You can provide a custom one-time response when you call the function; this is especially useful when simulating errors.
 
-For example (in coffeescript):
+For example (in CoffeeScript):
 
-```coffeescript
+```CoffeeScript
   #...Given setup here...
   When 'the user executes the "add to group" command', ->
   Meaning -> vm.addToGroup()
@@ -1372,7 +1376,7 @@ For example (in coffeescript):
 ```
 
 In addition to supplying the HTTP `status` code (default 200) and `responseText`, you can also return HTTP headers in a `headers` object as needed:
-```coffeescript
+```CoffeeScript
       Meaning -> backend.respondTo 'addGroup', {
           responseText : '{id:1}',
           headers : {
@@ -1382,19 +1386,19 @@ In addition to supplying the HTTP `status` code (default 200) and `responseText`
 
 As a convenience, you can also return a `responseObj` instead of a `responseText`. This will (as you might guess), simply serialize the provided object into the responseText:
 
-```coffeescript
+```CoffeeScript
       Meaning -> backend.respondTo 'addGroup', {
           responseObj : {id:1}
         }
 ```
 
-And because more often than not you will be returing a successful response instead of a failure, there's a final shortcut in which you simply provide the responseObj itself (equivalent to the previous example):
+And because more often than not you will be returning a successful response instead of a failure, there's a final shortcut in which you simply provide the responseObj itself (equivalent to the previous example):
 
-```coffeescript
+```CoffeeScript
       Meaning -> backend.respondTo 'addGroup', {id:1}
 ```
 
-Race conditions are easily catchable because now you can spell out the exact order of the Ajax return calls. If you are having trouble isolating a race condition, simply have the Ajax calls return in various orders until you have isolated it. Now that can become a permanent test case to not only help you fix and test, but also prevent a regression in the future.
+Race conditions can be more easily caught because now you can spell out the exact order of the Ajax return calls. If you are having trouble isolating a race condition, simply have the Ajax calls return in various orders until you have isolated it. Now that can become a permanent test case to not only help you fix and test, but also prevent a regression in the future.
 
 ####Live demo / user training mode
 
@@ -1457,11 +1461,11 @@ The database is one-table at a time for now. Anything more complex (involving jo
 
 You can lean on the fake data API which will provide fake data based on an analysis of the names of the fields, their data types, and their constraints. Often you won't be using it directly but simply relying on the GluJS data layer to create it for you when you make a sample table. See the API for more details.
 
-Building out the ease and sophistication of the ajax and data frameworks is one of our top priorites on the GluJS roadmap and we are greatly interested in your feedback.
+Building out the ease and sophistication of the ajax and data frameworks is one of our top priorities on the GluJS roadmap and we are greatly interested in your feedback.
 
 ##View: the basics
 
-The view is the final piece of the puzzline in creating rich, reactive applications.
+The view is the final piece of the puzzle of creating rich, reactive applications.
 
 For the most part, the point of GluJS is that it lets the underlying view provider - for now ExtJS - really shine. GluJS takes care of the high-friction parts - the specification and management of the behavior and enterprise glue - so that your ExtJS can be as straightforward and as uncomplicated as possible. That's good, because even straightforward ExtJS view definitions can take time to master.
 
@@ -1486,11 +1490,11 @@ glu.defineView('helloworld.personSet',{
 });
 ```
 
-You can nest ExtJS components within your view as much as you want. The *binding context* of the view will remain the matching view model no matter how deep you go. So you can have a rich view with many nested compenents bound to a flat view model if that suits your application.
+You can nest ExtJS components within your view as much as you want. The *binding context* of the view will remain the matching view model no matter how deep you go. So you can have a rich view with many nested components bound to a flat view model if that suits your application.
 
 Views can also be using a *factory* pattern when using *layouts* (discussed below).
 
-####Includes (quick xtypes)
+####Includes (quick xtype)
 
 Sometimes you want to separate a large view up into smaller parts for easier management, even if the view as a whole is simply bound to a single view model.
 
@@ -1518,9 +1522,9 @@ This just "inlines" the declarative JSON into the parent view - simple.
 
 As we saw earlier, views are "materialized' automatically by GluJS. You define them, but you don't manipulate them in any way. Instead, they are created and inserted for you.
 
-You begin by using one of two glu components : `glu.viewport` and `glupanel`. The former creates an ExtJS viewport for you, while the latter is an `xtype` usable anywhere within an ExtJS application.
+You begin by using one of two glu components : `glu.viewport` and `glupanel`. The former creates an ExtJS `Viewport` for you, while the latter is an `xtype` usable anywhere within an ExtJS application.
 
-In either case, by using on of them you will be specifying the *root view model* (available as `this.root` from all child view models). Both will materialize the matching root view in the appropriate spot; the first as the viewport of the entire web window, the second wherever you place the panel in a non-glu application.
+In either case, by using on of them you will be specifying the *root view model* (available as `this.root` from all child view models). Both will materialize the matching root view in the appropriate spot; the first as the `Viewport` of the entire web window, the second wherever you place the panel in a non-glu application.
 
 From there, other views are brought in as appropriate, either as a nested view or as a container-bound view.
 
@@ -1751,7 +1755,7 @@ This organization by view model effectively and naturally 'namespaces' your loca
 
 ####Substitutions (parameterized localization)
 
-Simple text is not always enough - sometimes you need to localize a phrase with arbitrary value substitutions in the middle. You can't simply concatenate in your view model because different languages will order things differently. For that, gluJS supports `string format` like functionality.
+Simple text is not always enough - sometimes you need to localize a phrase with arbitrary value substitutions in the middle. You can't simply concatenate in your view model because different languages will order things differently. For that, gluJS supports `string format`-like functionality.
 
 When localizing from a view model, along with the key you can pass in values that the key will use in rendering the text. If you want to make sure you can pass in the first name on the message, just do this:
 
@@ -1789,7 +1793,7 @@ glu.assets.locale = {
 }
 ```
 
-Will work even if you don't provide the key, assuming `assetSelections` is an array property on the view model. Keep in mind that this is probably not the best way to organize things because it forces your locale keys to be somewhat "viewmodel-aware" but is provided as an option for corner-cases.
+Will work even if you don't provide the key, assuming `assetSelections` is an array property on the view model. Keep in mind that this is probably not the best way to organize things because it forces your locale keys to be somewhat "view model-aware" but is provided as an option for corner-cases.
 
 ####Custom localizer
 
@@ -1846,7 +1850,7 @@ Many properties support one-way binding (model to control). If the control has a
 
 When their is a mismatch in naming between configuration property and the method on the control, that is no cause to worry. GluJS contains binding *adapters* for each component that take care of the mismatch and call the appropriate control method for you (if such a method is available - a few configuration properties really can't be easily changed after initialization).
 
-Controls in turn may update one or more properties they are bound to. Controls derived from *field* for instance always have a way to update their `value` property. Whenever this is the case (and you haven't otherwise indicated in a binding directive), GluJS will automatically also bind from control -> view model. That means whenever the value of the control changes, the matching property on the view model will be updated. This is done through that control's GluJS binding adapter, which listens on an appropriate event emitted by the control and updates the matching view model proprety accordingly.
+Controls in turn may update one or more properties they are bound to. Controls derived from *field* for instance always have a way to update their `value` property. Whenever this is the case (and you haven't otherwise indicated in a binding directive), GluJS will automatically also bind from control -> view model. That means whenever the value of the control changes, the matching property on the view model will be updated. This is done through that control's GluJS binding adapter, which listens on an appropriate event emitted by the control and updates the matching view model property accordingly.
 
 Control config properties that are available for two-way binding per control are documented in the binding adapter API documentation.
 
@@ -1873,7 +1877,7 @@ glu.defView('helloworld.main',{
 
 This will make the `cls` change from 'button-arriving-true' to 'button-arriving-false' dynamically (and the GluJS component adapter will set the css class accordingly).
 
-The preferred option is to make the formula explicit in the view model, but this on occasion makes more sense (when there are many of them or when writing a transformer). And of course when the strings are meant to be read, the preferred option is to use the localization facility instead so no text is hard-coded and unlocalizable.
+The preferred option is to make the formula explicit in the view model, but this on occasion makes more sense (when there are many of them or when writing a transformer). And of course when the strings are meant to be read, the preferred option is to use the localization facility instead so no text is hard-coded and non-localizable.
 
 ###Binding commands
 
@@ -1919,7 +1923,7 @@ In the preceding example, `archiveAsset` is a typical  "two-step" action in whic
 
 Yet sometimes you have a command that only makes sense with a parameter. For instance, the `openAsset` command *selects and invokes* in a single operation; the user can arbitrarily double-click on any row and intend 'open *this one*'. There is no way for the `openAsset` command to rely on a previous state.
 
-In otherwords, the event/command itself is inherently *parameterized*. In those cases, GluJS has a convenient built-in shortcut. ExtJS events that are inherently parameterized always pass in the data target as the second (or later) parameter. GluJS simply passes in every argument but the first into your command (in the case of `itemdblclick` it passes in the `Ext.data.Model` you just double-clicked). That's why the `openAsset` in the example will get the `model` reference it is requesting in its signature.
+In other words, the event/command itself is inherently *parameterized*. In those cases, GluJS has a convenient built-in shortcut. ExtJS events that are inherently parameterized always pass in the data target as the second (or later) parameter. GluJS simply passes in every argument but the first into your command (in the case of `itemdblclick` it passes in the `Ext.data.Model` you just double-clicked). That's why the `openAsset` in the example will get the `model` reference it is requesting in its signature.
 
 Another case for parameterization is when you have multiple buttons logically pointing to the same command, each with slightly different options. Rather than creating a unique command function for each, it makes sense to switch out the options as parameters.
 
@@ -1965,7 +1969,7 @@ Static views are usually not all there is in a reactive application. In fact, a 
 
 ExtJS has some support for this. The most obvious example is the grid, which renders each item (a record or model) in a list (store) - but you have to use grid columns or your own HTML renderers and not ExtJS controls, and it is assumed that all rows are the same. A less-commonly used option is the `DataView`. It is much the same as a grid, but instead of the template being a set of ExtJS components (as one would expect), it is instead a raw HTML `xtemplate` that you supply and again assumes similar rows. Furthermore, since the appeal of a widget set like ExtJS is that you *are not having to write* cross-browser HTML, using the `DataView` can be frustrating and counter-intuitive.
 
-ExtJS also supports normal `container` structures like tabs, accordion layouts, menus, etc. which *do* let you put a variety of items inside them. However, these don't let you bind what they contain to a store. You must manually create and maintain the appropriate child components. This is obviously redundant and repetitive for grids and dataviews; it is equally redundant and repetitive here.
+ExtJS also supports normal `container` structures like tabs, accordion layouts, menus, etc. which *do* let you put a variety of items inside them. However, these don't let you bind what they contain to a store. You must manually create and maintain the appropriate child components. This is obviously redundant and repetitive for `grid`s and `dataview`s; it is equally redundant and repetitive here.
 
 GluJS unifies the 'templated list' pattern into a single, simple concept called `container binding` or more specifically `items binding`.
 
@@ -2217,7 +2221,7 @@ This is a component adapter for the `Ext.button.Button` component. Here are some
  * `applyConventions` - applies conventions when gluJS detects a `name` property. Notice that the `handler` is a required binding (if you call a button 'save' there better be a 'save' command on the view model) while 'pressed' is an optional binding.
  * `pressedBindings` - provides special helpers when binding to the `pressed` component property, such as how to set the component property in response to view model changes (`setComponentProperty`) which event to respond to `toggle` and how to return the event value `eventConverter`.
 
-Whenever we come across a component property (or component) that we have yet 'gluified', we simply go into the appropriate adapter (or create a new one) and add the bindings. In other words, instead of having 'hacks' spread throughout the code to remember that you have to call 'toggle' to change the 'pressed' state of a button, we set it up one time in the adapter and then can ignore an unecessary 2/3 of the ExtJS control API (along with the other GluJS benefits).
+Whenever we come across a component property (or component) that we have yet 'gluified', we simply go into the appropriate adapter (or create a new one) and add the bindings. In other words, instead of having 'hacks' spread throughout the code to remember that you have to call 'toggle' to change the 'pressed' state of a button, we set it up one time in the adapter and then can ignore an unnecessary 2/3 of the ExtJS control API (along with the other GluJS benefits).
 
 If you have a custom control of your own, you can just make an adapter as above and register it. Even simpler, make sure you controls have a consistent `foo:value`/`setFoo()` pattern and you will minimize your need for adapters in the first place.
 
@@ -2225,7 +2229,7 @@ If you have a custom control of your own, you can just make an adapter as above 
 
 Ever need to create a custom control that was just a collection of controls or some simple tweaks, and ended up having to make a whole complicated ExtJS component class? Ever wanted a plugin that could change everything about the control, even including its xtype? That would be obviously impossible within ExtJS, since plugins are invoked *after* a specific component is created.
 
-What you would need is the ability to transform the configuration block itself *before* ExtJS started making components off of it. That's all a transformer is. It lets you stick with the most straightforward part of ExtJS - the configuration properties we use when setting up views - and avoid the internal complexities and limitations of subclassing a component.
+What you would need is the ability to transform the configuration block itself *before* ExtJS started making components off of it. That's all a transformer is. It lets you stick with the most straightforward part of ExtJS - the configuration properties we use when setting up views - and avoid the internal complexities and limitations of sub-classing a component.
 
 Here's an example of a plugin provided with gluJS that actually determines the xtype of a property by a set of rules *based on the data type of the property*. In other words, if the property is a date / time, you get a date time picker, a boolean becomes a checkbox, a field constrained by another becomes a combo-box, etc.
 
@@ -2264,7 +2268,7 @@ glu.defView ('assets.asset', {
 });
 ```
 
-Each field will *automatically* get its proper type based on its data value. When designing enterprise applications, this gives you the ability to *standardize the feel of the application* by enforcing control consistency. Want all of your booleans to be a yes/no radio button instead of a checkbox? No problem, just change the 'autofield' adapter and you can enforce the change globally throughout the application. Of course, whereever exceptions are needed, you can fall back to explicit xtypes (as shown in the 'fieldset' definition above).
+Each field will *automatically* get its proper type based on its data value. When designing enterprise applications, this gives you the ability to *standardize the feel of the application* by enforcing control consistency. Want all of your booleans to be a yes/no radio button instead of a checkbox? No problem, just change the `autofield` adapter and you can enforce the change globally throughout the application. Of course, wherever exceptions are needed, you can fall back to explicit `xtype`s (as shown in the `fieldset` definition above).
 
 Perhaps you know the xtype, but you would like to transform it based on a pattern. For instance, suppose you had a notion of "change tracking" in a field in which you needed to see the original value of the control laid out in a display field next to the current value. Since this is a fundamental change in each field, you might be tempted to make a new type of control per field type ('changeawareradiobutton', 'changeawaretextfield', etc.), or make a special type of container that throws out the controls you add to it and rebuilds the structure. But not only would that be a great deal of custom work, you couldn't quickly change back to contexts in which you *didn't* need that capability. In short, you don't have many good options.
 
