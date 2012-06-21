@@ -565,9 +565,9 @@ The `commit` function lets you set the current values as the new "original" valu
 
 With this pattern, your data does not have to be arbitrarily separated into a pure 'model' with no behavior. After all, if you are building a UI you are going to be displaying that data on the screen, and you're going to need all the rich reactive behavior GluJS provides. The view model concept unifies model with controller and makes your architecture a whole lot simpler - and you can still separate out your "data definitions" (models) for re-use by leveraging `modelType` as needed.
 
-### Formulas
+### Formula Properties
 
-Formulas are read-only properties that respond to changes in other properties. To declare a formula, put a `$` at
+Formula properties (or just formulas for short) are read-only properties that respond to changes in other properties. To declare a formula, put a `$` at
 the end of the name (this won't become part of its name but is just a flag) and then supply a function that returns
 a value:
 
@@ -578,6 +578,8 @@ saveIsEnabled$: function(){return this.isValid && this.isDirty;}
 GluJS will scan the function and find property change events to listen for and so will automatically keep up to date with a minimum of recalculation. In the example above, if (and only if) the `isValid` or `isDirty` properties change, it will update the value of `saveIsEnabled`.
 
 Formulas can also be chained: in the example above both `isValid` and `isDirty` are actually other formulas!
+
+Formulas are key to managing the reactive nature of your UI application because formulas are themselves 'reactive'. Like formula cells in a spreadsheet, they are always up to date no matter what approach or order the user takes to manipulating the UI. Extremely complex patterns and corner cases can resolve themselves "automatically" when you let formulas manage application flow, so use them whenever you can.
 
 #### IsValid
 
