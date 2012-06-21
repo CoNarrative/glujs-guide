@@ -699,6 +699,14 @@ saveIsEnabled$ : function(){
 }
 ```
 
+Here's a trick about isValid functions: you can supply a bit of text instead of `false` and it will count as `false`. This let's you return an error message to a `valid` component binding in a single pass:
+
+```javascript
+nameIsValid$ : function(){
+    return this.name.substring(0,1)==='Z' ? true : 'The name must start with Z';
+}
+```
+
 ### Submodels / child view models
 
 GluJS is a framework for quickly developing real applications with complex navigation and screens. Very often you'll want to split your
@@ -762,7 +770,7 @@ Reactors and formulas are automatically attached/detached based on the current c
 
 The idea of a tree of collaborating view models is a key organizing pattern to larger applications. It lets you break down the application into component parts, while letting them naturally reference one another without having to worry about explicit observer patterns. You can even think of it as giving you a natural fine-grained message bus - put properties or events you are interested in globally at the root level, and more local properties/events lower down the chain.
 
-### Commands
+###Commands
 
 Whenever the user needs to take an action that isn't necessarily as simple as updating a property - especially when it involves
 an Ajax call - then that is a command.
@@ -788,7 +796,7 @@ for other behavior (like in a formula).
 
 Whenever possible, see if what you're trying to do can be reduced to a property and go with that.
 
-#### Guard functions
+####Guard functions
 
 Glu has some strong naming conventions around commands (as well as other properties). These are called *guard functions*. They are simply formulas that *guard* other properties or commands from being accessed and other than the naming convention, are nothing special. The list includes the following (assuming *foo* is the name of a property or command):
  * `fooIsEnabled`  - whether it is enabled/disabled
@@ -798,7 +806,7 @@ Glu has some strong naming conventions around commands (as well as other propert
 Following the naming pattern not only keeps your code consistent across time and developers, but also enables convention-based binding, a feature that reduces code clutter even further (see
 the section on [Binding by convention](#binding-by-convention)).
 
-### Reactors
+###Reactors
 
 The reactor pattern is simply a shortcut to managing "event observers". It's a powerful way to reduce code clutter and break
 out different UI behavior as "rules".  For certain reactive patterns, it lets you "plug in" new behavior in one spot without modifying (and possibly breaking) existing behavior.
@@ -2033,19 +2041,114 @@ If you already have a localization scheme in place at a higher level of your app
 
 We've up until now covered "explicit" binding of control config properties. This already is a powerful pattern for organizing UI and greatly simplifying code. Yet as you use it, you will inevitably notice that binding patterns tend to repeat themselves.
 
-Consider the case of a set of fields in a form:
+Consider the case of a set of fields in a form with some standard commands in the toolbar:
 
 ```javascript
 glu.defView ('assets.asset', {
     xtype : 'form',
-
+    tbar : [{
+        text : '~~save~~',
+        handler : '@{save}',
+        disabled : '@{!saveIsEnabled}
+    },{
+        text : '~~revert~~',
+        handler : '@{revert}',
+        disabled : '@{!revertIsEnabled}
+    }],
+    items : [{
+        fieldLabel : '~~name~~',
+        value : '@{name}',
+        disabled : '@{!nameIsEnabled}',
+        valid : '@{nameIsValid}'
+    }, {
+        fieldLabel : '~~status~~',
+        value : '@{status}',
+        hidden : '@{!statusIsVisible}',
+        valid : '@{statusIsValid}'
+    }, {
+        xtype : 'fieldset',
+        collapsed : '@{!archiveSectionIsExpanded},
+        items : [{
+            fieldLabel : '~~lastInventory~~',
+            value : '@{lastInventory}'
+        },{
+            fieldLabel : '~~recoveredLicenses~~',
+            value : '@{recoveredLicenses}',
+            hidden : '@{recoveredLicensesIsVisible}'
+        }]
+    }//...etc....
 });
 ```
+
+These are very common bindings for rich forms with validation and fields dependent on the values of other fields. Since we're following the naming convention established earlier for [guard functions](guard-functions), the names are deterministic based on the property we are binding to.
+
+Here's the magic shortcut: provide a `name` property with the name of the appropriate property or command (the name only, not a binding) and let gluJS apply the bindings for you:
+
+```javascript
+glu.defView ('assets.asset', {
+    xtype : 'form',
+    tbar :[{
+        name : 'save'
+    },{
+        name : 'cancel'
+    }],
+    items : [{
+        name : 'name',
+    }, {
+        name : 'status',
+    }, {
+        xtype : 'fieldset',
+        name : 'archiveSection',
+        items : [{
+            name:'lastInventory'
+        },{
+            name: 'recoveredLicenses'
+        }]
+   }//...etc....
+});
+```
+
+Each ExtJS control adapter has a set of 'conventions' that it will apply based on the nature of the control. Some are standard across all components (like `hidden`). Others are specific to certain components (like `fieldLabel` and `collapsed`). These are all detailed in the API documentation. When GluJS sees a 'name' property, it applies the bindings automatically using the optional flag - so if the matching view model property isn't there it just ignores them. You can always override the convention by explicitly setting the component property to whatever you want.
+
+Convention-based binding is not just a shortcut - it's a way to even further simplify your development workflow to "stay in the zone" of setting up story-based specification tests and then implementing the view model.
+
+Imagine that you want to add a validator to the `lastInventory` property. Add the appropriate steps in your story, and let the test fail so that you know the test is valid. Then supply the formula property according to naming convention:
+
+```javascript
+    //viewmodel...
+    lastInventoryIsValid$:function(){
+        return this.date > this.minDate ? true : 'Too far back';
+    }
+```
+
+Your test now passes. Fire up the application and the view behavior will be already "wired" in because you followed the convention and used convention-based binding. Repeat for the next bit of functionality.
+
+We haven't gotten to GluJS extension points yet, but it's worth mentioning that this pattern enables even more than a simplified workflow. Convention-based bindings are just one example of "cross-cutting" interceptors within GluJS. Since it is straightforward to add your own (see [Extending GluJS](#extending-glujs)), it becomes a powerful means to enforce application consistency. You can use that single key not only for localization, but to determine even the type of control to use (within a field) or whether to even include the control based on security permissions. These become 'application' level concerns so that they are enforced automatically instead of being enforced ad-hoc by each developer when they remember - the rule in GluJS application design is that if some feature appears everywhere, then it probably should appear nowhere and be removed to infrastructure.
+
+Name-based bindings come with one final shortcut: if you just provide a string in an `items` array, it assumes you mean a configuration of the form `{ name: 'stringYouProvided'}`. So the previous view can be simplified further.
+
+This shortcut is especially handy when you would like to automate button and control generation:
+
+```javascript
+glu.defView ('assets.asset', {
+    xtype : 'form',
+    tbar :['save','cancel'],
+    items : ['name','status',{
+        xtype : 'fieldset',
+        name : 'archiveSection',
+        items : ['lastInventory','recoveredLicenses']
+   }//...etc....
+});
+```
+
+Plus it's just a whole lot simpler to read.
+
+We recommend that you lean heavily on your application as it not only makes your code much more concise, it gives you the ability to logically "build your UI" at run-time based on cross-cutting enterprise concerns - like 100% consistent controls, localization, and security.
 
 ##Extending GluJS
 
 
-###view adapters
+###View adapters
 
 
 ###view transformers
