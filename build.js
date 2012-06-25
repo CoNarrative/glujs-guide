@@ -111,9 +111,12 @@ function build(){
                 var line = indents[header.depth-1] + '* [' + header.text + '](#' + headerName +')';
                 r.push(line);
             }
+            r.push('\n')
             //output pages and fix links to accomodate split pages
+            var allLines = [];
             for (var pageName in pages){
                 var lines = pages[pageName];
+                allLines = allLines.concat(lines);
                 for (var i = 0; i<lines.length; i++){
                     lines[i] = lines[i].replace(linkReferencesRegex, function(match, link){
                         if (link==null) return;
@@ -126,6 +129,7 @@ function build(){
                 }
                 fs.writeFile(buildDir + '/' + pageName + '.md',lines.join('\n') + footer);
             }
+            fs.writeFile(buildDir + '/guide.md',allLines.join('\n') + footer);
         });
 
 }
