@@ -153,6 +153,7 @@ Given 'the Hello World application on launch', ->
 ```
 
 We use CoffeeScript (for the specifications only) because it makes them so short and expressive that they match up very closely with the plain English specification provided by the analyst. Here's the same thing in javascript if you prefer that:
+
 ```javascript
 Given ('the Hello World application on launch', function() {
     var vm;
@@ -989,6 +990,7 @@ First, if it is simply a message box, then use the built in `this.message` on th
 ```
 
 Second, if it is a confirmation, use the `this.confirm`, which has the same syntax as within ExtJS.
+
 ```javascript
     removeAssets:function () {
         this.confirm({
@@ -1160,6 +1162,7 @@ GluJS combined with Jasmine provides complete simulation coverage for all four c
 ####Simulation setup
 
 Usually you are going to define and set up your root view model using `glu.model` since that function gives you root view model without creating a view:
+
 ```CoffeeScript
     Given 'the Hello World application on launch', ->
       vm = null
@@ -1224,6 +1227,7 @@ Given 'the Hello World application on launch', ->
 ```
 
 If it is responding to a dialog there's a special method off of the confirm method called `respondWith`:
+
 ```CoffeeScript
     When 'the user confirms the delete action', ->
       Meaning -> vm.confirm.respondWith('yes')
@@ -1290,6 +1294,7 @@ For example, let's say that the 'add to group' operation triggers a single 'add 
         #Leaving off the response object lets a centrally defined fake service handle it, and so can keep state within a story
         Meaning -> backend.respondTo 'persons'
 ```
+
 Remember, we don't trigger the calls themselves -- the view model does that as it goes about its normal business. We just provide the simulated response from the backend in order to drive the story forward.
 
 ###ShouldHave
@@ -1422,6 +1427,7 @@ For example (in CoffeeScript):
 ```
 
 In addition to supplying the HTTP `status` code (default 200) and `responseText`, you can also return HTTP headers in a `headers` object as needed:
+
 ```CoffeeScript
       Meaning -> backend.respondTo 'addGroup', {
           responseText : '{id:1}',
@@ -1711,6 +1717,7 @@ glu.defView('asset.assets', {
     }]
 });
 ```
+
 That is, the 'sidebyside' layout everyone is sharing assumes that your view will provide a `title`, `leftGrid`, `rightGrid` and a set of `customActions` button definitions. As long as those are provided, the layout factory (referenced in `parentLayout` which triggers using the layout) will render the actual view. Now additional views can do the same thing and will all share a common look and feel.
 
 ####Dialogs
@@ -1753,6 +1760,7 @@ GluJS is an enterprise framework that assumes every application should be locali
 To make sure text is localized, simply supply a *localization key* instead of the actual text. You may have noticed this pattern throughout the examples - you simply wrap the key in a pair of double-tildes (`~~`). The view above declares three localization keys - `screens` and `favorites`. To supply these, simply provide a localization object for that user:
 
 **English locale object for preceding example code**
+
 ```javascript
 assets.locale = {
     screens : 'Screens',
@@ -1914,6 +1922,7 @@ In the example above, we already saw the `title: '@{message}'` binding. Since th
 Here and there it will be convenient to have a facility to 'inline' a text-replacement formula within a view. For instance, you may want a one-way binding that calculates the name of a css class:
 
 An example of hello world that changes the styling of the button:
+
 ```javascript
 glu.defModel('helloworld.main',{
     arriving : true,
@@ -1983,6 +1992,7 @@ Another case for parameterization is when you have multiple buttons logically po
 To that end, GluJS will automatically append the `value`, `name`, or `itemId` of the control as part of its command invocation.
 
 Example of value-based command parameters:
+
 ```javascript
 glu.defModel ('assets.main',{
     screenList : {
@@ -2231,6 +2241,7 @@ In fact, a good chunk of GluJS intelligence resides in the adapters - the GluJS 
 Let's take a look at a fairly simple component adapter:
 
 **Example: gluJS button adapter (stripped of comments)
+
 ```javascript
 glu.regAdapter('button', {
     extend : 'component',
@@ -2294,6 +2305,7 @@ What you would need is the ability to transform the configuration block itself *
 Here's an example of a plugin provided with gluJS that actually determines the xtype of a property by a set of rules *based on the data type of the property*. In other words, if the property is a date / time, you get a date time picker, a boolean becomes a checkbox, a field constrained by another becomes a combo-box, etc.
 
 **Example of an 'autofield' transformer adapter (code collapsed for clarity)**
+
 ```javascript
 glu.regAdapter('autofield', {
     beforeCollect: function (config, viewmodel){
@@ -2335,6 +2347,7 @@ Perhaps you know the xtype, but you would like to transform it based on a patter
 With the ability to intercept the config *before* rendering and the ability to specify a `transform` adapter at any point, you can handle these sorts of enterprise scenarios quite simply. Just make an adapter that modifies the config tree (perhaps to a `fieldcontainer` or a `compositefield`) just like the autofield adapter. Since you're just editing the config in code there is no ExtJS or any other magic you need to know.
 
 Then to apply it use the `transforms` property (there's a `defaultTransforms` shortcut similar to `defaultType`):
+
 ```javascript
 glu.defView ('assets.asset', {
     xtype : 'form',
@@ -2368,7 +2381,7 @@ To remove the 'change aware' behavior you would simply remove the `defaultTransf
 
 Sometimes you want that adapter to run *everywhere* without the developer having to deal with. A common example of this would be a permissions-applier adapter that would edit the view tree based on what the user is permitted to do. You don't want the developer to have to worry about; instead you want to inspect all of the view components as they materialize. If you are using `name` consistently, then you have everything you need to enforce a permissions structure based on view model and property or command.
 
- ```javascript
+```javascript
 glu.regAdapter('permissions', {
     beforeCollect: function (config, viewmodel){
      var areaKey = viewmodel.viewmodelname;
@@ -2381,7 +2394,7 @@ glu.regAdapter('permissions', {
 }
 
  glu.plugin ('permissions');
- ```
+```
 
 The `glu.plugin` function lets you take any adapter and run it on every control in the pipeline.
 
