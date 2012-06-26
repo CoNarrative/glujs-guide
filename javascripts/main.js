@@ -31,6 +31,12 @@ $(document).ready(function(){
     event.preventDefault();    
   });
   
+  $("section ul li").on("click", "a", function(event) {
+    var position = $($(this).attr("href")).offset().top - 190;
+    $("html, body").animate({scrollTop: position}, 400);
+    event.preventDefault();    
+  });
+  
   sectionHeight();
   
   $('img').load(sectionHeight);
