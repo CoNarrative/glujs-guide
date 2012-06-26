@@ -1,7 +1,7 @@
 var srcFile = 'guide.md';
 var buildDir = 'build';
 var rootName = 'guide-toc';
-var footer = "\n\n*Copyright 2012 Mike Gai. All rights reserved.*"
+var footer = "\n\n*Copyright 2012 CoNarrative. All rights reserved.*"
 
 var path = require('path');
 var fs = require('fs');
