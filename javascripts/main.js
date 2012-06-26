@@ -40,6 +40,11 @@ $(document).ready(function(){
   sectionHeight();
   
   $('img').load(sectionHeight);
+  var hsh = document.location.hash;
+  if (hsh && hsh.indexOf("#") == 0) {
+    var pos = $(hsh).offset().top-190;
+	  $("html, body").animate({scrollTop: pos}, 400);    
+  }
 });
 
 fixScale = function(doc) {
