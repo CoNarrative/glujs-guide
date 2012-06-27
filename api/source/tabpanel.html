@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/*
+ * Copyright (C) 2012 by CoNarrative
+ */
+glu.regAdapter('tabpanel', {
+    extend : 'panel',
+
+    items:{
+        custom:function (context) {
+            var tabpanel = context.control;
+            tabpanel.activeTab = context.viewmodel.get(context.binding.modelPropName);
+            if (context.valueSetTask === undefined) {
+                context.valueSetTask = new Ext.util.DelayedTask(function () {
+                });
+            }
+
+            context.viewmodel.on(context.binding.modelPropName + 'Changed', function (value) {
+                context.valueSetTask.delay(1,function(){
+                    tabpanel._changeOriginatedFromModel = true;
+                    tabpanel.setActiveTab(value);
+                    delete tabpanel._changeOriginatedFromModel;
+                });
+            });
+
+            tabpanel.on('beforetabchange', function (tab, newpanel) {
+                if (tabpanel._changeOriginatedFromModel) {
+                    return true;
+                }
+                var newIndex = tab.items.indexOf(newpanel);
+                context.viewmodel.set(context.binding.modelPropName, newIndex);
+                return false;
+            }, this);
+        }
+
+    }
+
+});
+</pre>
+</body>
+</html>

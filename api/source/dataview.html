@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">/*
+ * Copyright (C) 2012 by CoNarrative
+ */
+<span id='glu-extjs-adapters-dataview'>/**
+</span> * @class glu.extjs.adapters.dataview
+ * @author Travis Barajas
+ * @extends glu.extjs.adapters.component
+ * Binds to a data view and handles selection.
+ *
+ *
+ */
+glu.regAdapter('dataview', {
+    extend : 'component',
+<span id='glu-extjs-adapters-dataview-cfg-selected'>    /**
+</span>     *  @cfg {Array} selected
+     *  Binds currently selected records
+     *  *Two-way binding*
+     */
+    selectedBindings:{
+        eventName:'selectionchange',
+        eventConverter:function (control) {
+            return control.getSelectedRecords();
+        },
+        setComponentProperty:function (value, oldValue, options, control) {
+            //do nothing for now...
+        }
+    }
+});</pre>
+</body>
+</html>
