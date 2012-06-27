@@ -45,7 +45,9 @@ $(document).ready(function(){
     if (hsh.charAt(hsh.length-1) == "/")	
       hsh=hsh.substring(0, hsh.length - 1);	
     var pos = $(hsh).offset().top-190;
-	  $("html, body").animate({scrollTop: pos}, 400);    
+    window.setTimeout(function(){
+	  $("html, body").animate({scrollTop: pos}, 400);
+    },200);
   }
 });
 
