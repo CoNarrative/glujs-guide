@@ -41,13 +41,12 @@ $(document).ready(function(){
   
   $('img').load(sectionHeight);
   var hsh = document.location.hash;
-  if (hsh && hsh.indexOf("#") == 0) {
+  if (hsh && hsh.indexOf("#") == 0 && hsh.length > 1) {
     if (hsh.charAt(hsh.length-1) == "/")	
       hsh=hsh.substring(0, hsh.length - 1);	
     var pos = $(hsh).offset().top-190;
-    window.setTimeout(function(){
-	  $("html, body").animate({scrollTop: pos}, 400);
-    },200);
+    $("html, body").animate({scrollTop: pos}, 400);
+    
   }
 });
 
