@@ -646,8 +646,7 @@ First is the <code>Viewport</code> entry-point when you are using GluJS globally
 <p><strong>MVC approach (NOT GluJS!)</strong></p>
 
 <div class="highlight">
-<pre><span class="c1">//CONTROLLER FILE</span>
-<span class="nx">Ext</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'Helloworld.controller.Main'</span><span class="p">,</span> <span class="p">{</span>
+<pre><span class="nx">Ext</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'Helloworld.controller.Main'</span><span class="p">,</span> <span class="p">{</span>
     <span class="nx">extend</span><span class="o">:</span> <span class="s1">'Ext.app.Controller'</span><span class="p">,</span>
     <span class="nx">refs</span><span class="o">:</span> <span class="p">[</span>
         <span class="p">{</span>
@@ -658,55 +657,55 @@ First is the <code>Viewport</code> entry-point when you are using GluJS globally
     <span class="nx">init</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
         <span class="c1">//Component Query to "wire up" toggle handler</span>
         <span class="k">this</span><span class="p">.</span><span class="nx">control</span><span class="p">({</span>
-            <span class="s1">'main#exitToggle'</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s1">'main &gt; toolbar &gt; button#exitToggle'</span><span class="o">:</span> <span class="p">{</span>
                 <span class="nx">toggle</span> <span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">onButtonChange</span>
+            <span class="p">},</span>
+            <span class="s1">'main'</span><span class="o">:</span> <span class="p">{</span>
+                <span class="nx">beforerender</span> <span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">onBeforePanelRendered</span>
             <span class="p">}</span>
         <span class="p">});</span>
     <span class="p">},</span>
     <span class="nx">onButtonChange</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">button</span><span class="p">,</span> <span class="nx">state</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">var</span> <span class="nx">msg</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">state</span> <span class="o">?</span> <span class="s1">'Goodbye World!'</span> <span class="o">:</span> <span class="s1">'Hello World!'</span><span class="p">;</span>
+        <span class="kd">var</span> <span class="nx">msg</span> <span class="o">=</span> <span class="nx">state</span> <span class="o">?</span> <span class="s1">'Goodbye World!'</span> <span class="o">:</span> <span class="s1">'Hello World!'</span><span class="p">;</span>
         <span class="k">this</span><span class="p">.</span><span class="nx">getMainPanel</span><span class="p">().</span><span class="nx">setTitle</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span> <span class="c1">//now getting a reference through the component query defined in refs</span>
+    <span class="p">},</span>
+    <span class="nx">onBeforePanelRendered</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">panel</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">panel</span><span class="p">.</span><span class="nx">setTitle</span><span class="p">(</span><span class="s1">'Hello World!'</span><span class="p">);</span> <span class="c1">//letting the controller manage initial state</span>
     <span class="p">}</span>
 <span class="p">});</span>
 <span class="c1">//VIEW FILE</span>
 <span class="nx">Ext</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'Helloworld.view.Main'</span><span class="p">,</span> <span class="p">{</span>
     <span class="nx">extend</span><span class="o">:</span> <span class="s1">'Ext.panel.Panel'</span><span class="p">,</span>
-    <span class="nx">alias</span><span class="o">:</span> <span class="s1">'main'</span><span class="p">,</span>
+    <span class="nx">alias</span><span class="o">:</span> <span class="s1">'widget.main'</span><span class="p">,</span>
+    <span class="nx">title</span> <span class="o">:</span> <span class="s1">'-'</span><span class="p">,</span>
     <span class="nx">initComponent</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
         <span class="k">this</span><span class="p">.</span><span class="nx">tbar</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="nx">xtype</span><span class="o">:</span> <span class="s1">'tbar'</span><span class="p">,</span>
             <span class="nx">items</span> <span class="o">:</span> <span class="p">[{</span>
                 <span class="nx">itemId</span> <span class="o">:</span> <span class="s1">'exitToggle'</span><span class="p">,</span>
-                <span class="nx">text</span> <span class="o">:</span> <span class="s1">'Coming/Going'</span> <span class="c1">//we let the controller wire up the toggle handler</span>
+                <span class="nx">text</span> <span class="o">:</span> <span class="s1">'Coming/Going'</span><span class="p">,</span>
+                <span class="nx">enableToggle</span><span class="o">:</span> <span class="kc">true</span>
             <span class="p">}]</span>
         <span class="p">};</span>
         <span class="k">this</span><span class="p">.</span><span class="nx">callParent</span><span class="p">();</span>
     <span class="p">}</span>
 <span class="p">});</span>
-<span class="c1">//VIEWPORT FILE</span>
-<span class="nx">Ext</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="s1">'Helloworld.view.Viewport'</span><span class="p">,</span> <span class="p">{</span>
-    <span class="nx">extend</span><span class="o">:</span> <span class="s1">'Ext.container.Viewport'</span><span class="p">,</span>
-    <span class="nx">layout</span><span class="o">:</span> <span class="s1">'fit'</span><span class="p">,</span>
-    <span class="nx">requires</span><span class="o">:</span> <span class="p">[</span>
-        <span class="s1">'Helloworld.view.Main'</span>
-    <span class="p">],</span>
-    <span class="nx">initComponent</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">this</span><span class="p">.</span><span class="nx">items</span> <span class="o">=</span> <span class="p">[{</span>
-            <span class="nx">xtype</span><span class="o">:</span> <span class="s1">'main'</span>
-        <span class="p">}];</span>
-    <span class="p">}</span>
-<span class="p">});</span>
 <span class="c1">//APPLICATION BOOTSTRAP FILE</span>
 <span class="nx">Ext</span><span class="p">.</span><span class="nx">application</span><span class="p">({</span>
     <span class="nx">name</span><span class="o">:</span> <span class="s1">'Helloworld'</span><span class="p">,</span>
-    <span class="nx">autoCreateViewport</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-    <span class="nx">controllers</span><span class="o">:</span> <span class="p">[</span><span class="s1">'Main'</span><span class="p">]</span>
+    <span class="nx">controllers</span><span class="o">:</span> <span class="p">[</span><span class="s1">'Main'</span><span class="p">],</span>
+    <span class="nx">launch</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">Ext</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">'Ext.container.Viewport'</span><span class="p">,</span> <span class="p">{</span>
+            <span class="nx">layout</span><span class="o">:</span> <span class="s1">'fit'</span><span class="p">,</span>
+            <span class="nx">items</span><span class="o">:</span> <span class="p">[{</span><span class="nx">xtype</span><span class="o">:</span> <span class="s1">'main'</span><span class="p">}]</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
 <span class="p">});</span>
 </pre>
 </div>
 
 
-<p>This is definitely some organizational improvement. Following a MVC pattern at least puts the code into separate code files, and now the application will have some basic 'lines' instead of being a complete 'blob'. But it does this <em>at the expense of much more code</em> (even just considering the view and controller).</p>
+
+        <p>This is definitely some organizational improvement. Following a MVC pattern at least puts the code into separate code files, and now the application will have some basic 'lines' instead of being a complete 'blob'. But it does this <em>at the expense of much more code</em> (even just considering the view and controller).</p>
 
 <p>In effect, all we've done is externalized how component event handlers and references back to other components are "wired". Now that we have split view and behavior apart, we have <em>even more work</em> than before in bringing them together again. A more accurate name for the pattern would be MVCRCQ - a model, view, controller, references, and component queries, because without <code>refs</code> and component queries for each and every bit of behavior, the MVC pattern doesn't work.</p>
 
