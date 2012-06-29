@@ -350,7 +350,6 @@ The next logical improvement is to separate the view (the actual control definit
 **MVC approach (NOT GluJS!)**
 
 ```javascript
-//CONTROLLER FILE
 Ext.define('Helloworld.controller.Main', {
     extend: 'Ext.app.Controller',
     refs: [
@@ -362,49 +361,48 @@ Ext.define('Helloworld.controller.Main', {
     init: function() {
         //Component Query to "wire up" toggle handler
         this.control({
-            'main#exitToggle': {
+            'main > toolbar > button#exitToggle': {
                 toggle : this.onButtonChange
+            },
+            'main': {
+                beforerender : this.onBeforePanelRendered
             }
         });
     },
     onButtonChange: function(button, state) {
-        var msg = this.state ? 'Goodbye World!' : 'Hello World!';
+        var msg = state ? 'Goodbye World!' : 'Hello World!';
         this.getMainPanel().setTitle(msg); //now getting a reference through the component query defined in refs
+    },
+    onBeforePanelRendered: function(panel) {
+        panel.setTitle('Hello World!'); //letting the controller manage initial state
     }
 });
 //VIEW FILE
 Ext.define('Helloworld.view.Main', {
     extend: 'Ext.panel.Panel',
-    alias: 'main',
+    alias: 'widget.main',
+    title : '-',
     initComponent: function() {
         this.tbar = {
-            xtype: 'tbar',
             items : [{
                 itemId : 'exitToggle',
-                text : 'Coming/Going' //we let the controller wire up the toggle handler
+                text : 'Coming/Going',
+                enableToggle: true
             }]
         };
         this.callParent();
     }
 });
-//VIEWPORT FILE
-Ext.define('Helloworld.view.Viewport', {
-    extend: 'Ext.container.Viewport',
-    layout: 'fit',
-    requires: [
-        'Helloworld.view.Main'
-    ],
-    initComponent: function() {
-        this.items = [{
-            xtype: 'main'
-        }];
-    }
-});
 //APPLICATION BOOTSTRAP FILE
 Ext.application({
     name: 'Helloworld',
-    autoCreateViewport: true,
-    controllers: ['Main']
+    controllers: ['Main'],
+    launch: function() {
+        Ext.create('Ext.container.Viewport', {
+            layout: 'fit',
+            items: [{xtype: 'main'}]
+        });
+    }
 });
 ```
 
