@@ -418,10 +418,10 @@
 <pre><span class="nx">Given</span> <span class="s">'the Hello World application on launch'</span><span class="p">,</span> <span class="o">-&gt;</span>
   <span class="nv">vm = </span><span class="kc">null</span>
   <span class="nx">Meaning</span> <span class="o">-&gt;</span> <span class="nv">vm = </span><span class="nx">glu</span><span class="p">.</span><span class="nx">model</span> <span class="s">'helloworld.main'</span>
-  <span class="nx">ShouldHave</span> <span class="s">'set the message to "Hello World!"'</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="nx">expect</span><span class="p">(</span><span class="nx">vm</span><span class="p">.</span><span class="nx">shoutOut</span><span class="p">).</span><span class="nx">toBe</span> <span class="s">'Hello World!'</span>
+  <span class="nx">ShouldHave</span> <span class="s">'set the message to "Hello World!"'</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="nx">expect</span><span class="p">(</span><span class="nx">vm</span><span class="p">.</span><span class="nx">message</span><span class="p">).</span><span class="nx">toBe</span> <span class="s">'Hello World!'</span>
   <span class="nx">When</span> <span class="s">'the user toggles their status'</span><span class="p">,</span> <span class="o">-&gt;</span>
     <span class="nx">Meaning</span> <span class="o">-&gt;</span> <span class="nx">vm</span><span class="p">.</span><span class="nx">set</span> <span class="s">'isLeaving'</span><span class="p">,</span> <span class="kc">true</span>
-    <span class="nx">ShouldHave</span> <span class="s">'set the message to "Goodbye World!"'</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="nx">expect</span><span class="p">(</span><span class="nx">vm</span><span class="p">.</span><span class="nx">shoutOut</span><span class="p">).</span><span class="nx">toBe</span> <span class="s">'Goodbye World!'</span>
+    <span class="nx">ShouldHave</span> <span class="s">'set the message to "Goodbye World!"'</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="nx">expect</span><span class="p">(</span><span class="nx">vm</span><span class="p">.</span><span class="nx">message</span><span class="p">).</span><span class="nx">toBe</span> <span class="s">'Goodbye World!'</span>
 </pre>
 </div>
 
@@ -435,13 +435,13 @@
         <span class="nx">vm</span> <span class="o">=</span> <span class="nx">glu</span><span class="p">.</span><span class="nx">model</span> <span class="p">(</span><span class="s1">'helloworld.main'</span><span class="p">);</span>
     <span class="p">});</span>
     <span class="nx">ShouldHave</span> <span class="p">(</span><span class="s1">'set the message to "Hello World!"'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nx">expect</span><span class="p">(</span><span class="nx">vm</span><span class="p">.</span><span class="nx">shoutOut</span><span class="p">).</span><span class="nx">toBe</span> <span class="p">(</span><span class="s1">'Hello World!);</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">vm</span><span class="p">.</span><span class="nx">message</span><span class="p">).</span><span class="nx">toBe</span> <span class="p">(</span><span class="s1">'Hello World!);</span>
 <span class="s1">        When ('</span><span class="nx">the</span> <span class="nx">user</span> <span class="nx">toggles</span> <span class="nx">their</span> <span class="nx">status</span><span class="s1">', function() {</span>
 <span class="s1">            Meaning (function(){</span>
 <span class="s1">                vm.set('</span><span class="nx">isLeaving</span><span class="s1">',true);</span>
 <span class="s1">            });</span>
 <span class="s1">            ShouldHave ('</span><span class="nx">set</span> <span class="nx">the</span> <span class="nx">message</span> <span class="nx">to</span> <span class="s2">"Goodbye World!"</span><span class="s1">', function(){</span>
-<span class="s1">                expect(vm.shoutOut).toBe ('</span><span class="nx">Goodbye</span> <span class="nx">World</span><span class="o">!</span><span class="err">'</span><span class="p">);</span>
+<span class="s1">                expect(vm.message).toBe ('</span><span class="nx">Goodbye</span> <span class="nx">World</span><span class="o">!</span><span class="err">'</span><span class="p">);</span>
             <span class="p">});</span>
         <span class="p">});</span>
 
@@ -1713,10 +1713,10 @@ instead of the matching ones on the 'glu' object because they</p>
 <pre><span class="nx">Given</span> <span class="s">'the Hello World application on launch'</span><span class="p">,</span> <span class="o">-&gt;</span>
   <span class="nv">vm = </span><span class="kc">null</span>
     <span class="nx">Meaning</span> <span class="o">-&gt;</span> <span class="nv">vm = </span><span class="nx">glu</span><span class="p">.</span><span class="nx">model</span> <span class="s">'helloworld.main'</span>
-    <span class="nx">ShouldHave</span> <span class="s">'set the message to "Hello World!"'</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="nx">expect</span><span class="p">(</span><span class="nx">vm</span><span class="p">.</span><span class="nx">shoutOut</span><span class="p">).</span><span class="nx">toBe</span> <span class="s">'Hello World!'</span>
+    <span class="nx">ShouldHave</span> <span class="s">'set the message to "Hello World!"'</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="nx">expect</span><span class="p">(</span><span class="nx">vm</span><span class="p">.</span><span class="nx">message</span><span class="p">).</span><span class="nx">toBe</span> <span class="s">'Hello World!'</span>
     <span class="nx">When</span> <span class="s">'the user toggles their status'</span><span class="p">,</span> <span class="o">-&gt;</span>
     <span class="nx">Meaning</span> <span class="o">-&gt;</span> <span class="nx">vm</span><span class="p">.</span><span class="nx">set</span> <span class="s">'isLeaving'</span><span class="p">,</span> <span class="kc">true</span>
-       <span class="nx">ShouldHave</span> <span class="s">'set the message to "Goodbye World!"'</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="nx">expect</span><span class="p">(</span><span class="nx">vm</span><span class="p">.</span><span class="nx">shoutOut</span><span class="p">).</span><span class="nx">toBe</span> <span class="s">'Goodbye World!'</span>
+       <span class="nx">ShouldHave</span> <span class="s">'set the message to "Goodbye World!"'</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="nx">expect</span><span class="p">(</span><span class="nx">vm</span><span class="p">.</span><span class="nx">message</span><span class="p">).</span><span class="nx">toBe</span> <span class="s">'Goodbye World!'</span>
 </pre>
 </div>
 
